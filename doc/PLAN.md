@@ -71,30 +71,30 @@ Hardness 1 through 10, need to be cleared with respective strength
 (eg, ball with a strength of 3 can clear a 10 brick with 4 hits)
 Special x and y bricks automatically gives power up (without "power up" dropping):  
 Type x gives power up #1  
-Type y gives power up #2  
-Special z bricks drops power up that player needs to catch
-Three kinds of power up drops randomly (using random number generator, <0.4 #3, 
-0,4< <0.7 #4, 0.7< <1 #5 power-up respectively)  
+Type y gives 20 points  
+Special z bricks drops power up that player needs to catch (3&4, dropped using 
+random number generator)
 
 ### Power Up Ideas
 1) increase ball strength by 1  
-2) increase a ball (for current level only, does not carry to next level)
-3) change paddle size (*2 or /2) 
+2) change paddle size (*2 or /2) 
 (two effects but same image, when paddle size < original only drops *2, when 
 paddle size > original only drops /2 (thus min 0.5, max 2))  
-4) gives 1 extra life
-5) gives 20 points
+3) gives 1 extra life
 
 ### Cheat Key Ideas
 * Number keys (ie, 1, 2, 3) skip to level 1, 2, 3 respectively (does not reset score life strength)  
 * L add 1 life  
 * R reset current level (include strength, life, score reset)  
 * P pause and play (?)  
-* B Back to start screen/restart the entire game  
+* esc Back to start screen  
 * E end game and calculate score (auto-win if ended during bonus level; else auto-lose)
+* B (sth extra - second ball)
 
 ### Something Extra
 * Direction of ball flies off depends on where on the paddle it hit; this implementation will make 
 the game more flexible since balls can bounce off in more directions (specifically, I'm thinking 
 if ball hit left 1/5, the angle it bounces off +30 (if +x axis is 0 and -x is 180), the left 2/5, 
-angle +10, mid 3/5, angle does not change, right 4/5, -10, right 5/5, -30)
+angle +10, mid 3/5, angle does not change, right 4/5, -10, right 5/5, -30)  
+* extra ball; does not inherit strength; when >1 ball is in the field and one ball hits 
+the floor life does not change but the ball that hit the floor disappear
