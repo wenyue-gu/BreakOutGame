@@ -17,7 +17,8 @@ basics rules and configuration of the classic game.
 
 ### General Level Descriptions
 Four levels in total; player starts with 3 lives; every time ball hits bottom floor life -1; 
-score = score + the strength at which the ball hit the brick; 
+score = score + the strength at which the ball hit the brick; strength of ball is carried over 
+from one level to the next until full reset/game end
 
 * Level 1 (max strength increase = 1+1 = 2):   
 0 3 0 0 3 0 
@@ -30,7 +31,7 @@ score = score + the strength at which the ball hit the brick;
 0 1 0 0 1 0  
 0 0 1 1 0 0  
 
-* Level 2: (max strength 2+1 = 3)  
+* Level 2: (max strength 2)  
 5 0 0 0 0 5  
 0 5 0 0 5 0  
 z 4 0 0 4 z  
@@ -39,9 +40,9 @@ z 4 0 0 4 z
 0 5 1 1 5 0  
 0 2 2 2 2 0  
 1 2 5 5 2 1  
-0 y 2 2 x 0  
+0 y 2 2 z 0  
 
-* Level 3: (max strength 3+1 = 4)  
+* Level 3: (max strength 2+1 = 3)  
 10 0 10 10 0 10  
 10 9 0 0 9 10  
 10 8 8 8 8 10  
@@ -68,10 +69,11 @@ Final score = score + #life left * 10
 ### Bricks Ideas
 Hardness 1 through 10, need to be cleared with respective strength  
 (eg, ball with a strength of 3 can clear a 10 brick with 4 hits)
-Special bricks drop power up:  
-Type x drops power up #1 
-Type y drops power up #2
-Type z drops randomly all other kind of power-ups (random number generator, <0.4 #2, 
+Special x and y bricks automatically gives power up (without "power up" dropping):  
+Type x gives power up #1  
+Type y gives power up #2  
+Special z bricks drops power up that player needs to catch
+Three kinds of power up drops randomly (using random number generator, <0.4 #3, 
 0,4< <0.7 #4, 0.7< <1 #5 power-up respectively)  
 
 ### Power Up Ideas
