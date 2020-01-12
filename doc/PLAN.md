@@ -20,8 +20,8 @@ Four levels in total; player starts with 3 lives; every time ball hits bottom fl
 score = score + the strength at which the ball hit the brick; 
 
 * Level 1 (max strength increase = 1+1 = 2):   
-0 1 0 0 1 0 
-1 1 1 1 1 1  
+0 3 0 0 3 0 
+1 1 2 2 1 1  
 0 1 1 1 1 0  
 1 x 0 0 z 1  
 1 0 y z 0 1  
@@ -33,9 +33,9 @@ score = score + the strength at which the ball hit the brick;
 * Level 2: (max strength 2+1 = 3)  
 5 0 0 0 0 5  
 0 5 0 0 5 0  
-z 2 0 0 2 z  
+z 4 0 0 4 z  
 0 5 0 0 5 0  
-0 2 2 2 2 0  
+0 2 3 3 2 0  
 0 5 1 1 5 0  
 0 2 2 2 2 0  
 1 2 5 5 2 1  
@@ -43,11 +43,11 @@ z 2 0 0 2 z
 
 * Level 3: (max strength 3+1 = 4)  
 10 0 10 10 0 10  
-10 10 0 0 10 10  
-10 10 10 10 10 10  
+10 9 0 0 9 10  
+10 8 8 8 8 10  
 z z 0 0 z z    
 10 5 0 0 5 10  
-0 10 5 5 10 0  
+0 8 5 5 8 0  
 5 5 5 5 5 5  
 0 10 0 0 10 0  
 10 5 y x 5 10 
@@ -66,8 +66,8 @@ z z 0 0 z z
 Final score = score + #life left * 10
 
 ### Bricks Ideas
-Hardness 1, 2, 5, 10, need to be cleared with respective strength  
-(eg, ball with a strength of 9 can clear a 100 brick with 12 hits)
+Hardness 1 through 10, need to be cleared with respective strength  
+(eg, ball with a strength of 3 can clear a 10 brick with 4 hits)
 Special bricks drop power up:  
 Type x drops power up #1 
 Type y drops power up #2
@@ -78,8 +78,8 @@ Type z drops randomly all other kind of power-ups (random number generator, <0.4
 1) increase ball strength by 1  
 2) increase a ball (for current level only, does not carry to next level)
 3) change paddle size (*2 or /2) 
-(two effects but same image, when paddle size < 1/2 original only drops *2, when 
-paddle size > 1 only drops /2 (thus min 0.25, max 2))  
+(two effects but same image, when paddle size < original only drops *2, when 
+paddle size > original only drops /2 (thus min 0.5, max 2))  
 4) gives 1 extra life
 5) gives 20 points
 
@@ -92,5 +92,7 @@ paddle size > 1 only drops /2 (thus min 0.25, max 2))
 * E end game and calculate score (auto-win if ended during bonus level; else auto-lose)
 
 ### Something Extra
-* Particle/bullet shooting power up (drop by Brick l)  
-* Direction of ball flies off depends on where on the paddle it hit
+* Direction of ball flies off depends on where on the paddle it hit; this implementation will make 
+the game more flexible since balls can bounce off in more directions (specifically, I'm thinking 
+if ball hit left 1/5, the angle it bounces off +30 (if +x axis is 0 and -x is 180), the left 2/5, 
+angle +10, mid 3/5, angle does not change, right 4/5, -10, right 5/5, -30)
