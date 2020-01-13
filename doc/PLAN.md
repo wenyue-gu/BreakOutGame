@@ -96,5 +96,5 @@ paddle size > original only drops /2 (thus min 0.5, max 2))
 the game more flexible since balls can bounce off in more directions (specifically, I'm thinking 
 if ball hit left 1/5, the angle it bounces off +30 (if +x axis is 0 and -x is 180), the left 2/5, 
 angle +10, mid 3/5, angle does not change, right 4/5, -10, right 5/5, -30)  
-* extra ball; does not inherit strength; when >1 ball is in the field and one ball hits 
+* extra ball; inherits strength; when >1 ball is in the field and one ball hits 
 the floor life does not change but the ball that hit the floor disappear
