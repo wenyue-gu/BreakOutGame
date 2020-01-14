@@ -30,19 +30,19 @@ public class Game extends Application {
     public static final Paint BACKGROUND = Color.AZURE;
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
     public static final String BOUNCER_IMAGE = "ball.gif";
-    public static final int BOUNCER_SPEED = 30;
-    public static final int BOUNCER_SPEED2 = 30;
+    public static final int BOUNCER_SPEED = 50;
+    public static final int BOUNCER_SPEED2 = 50;
     public static final String PADDLE_IMAGE = "pad.gif";
-    public static final int PADDLE_SPEED = 30;
-    public static final Paint MOVER_COLOR = Color.PLUM;
-    public static final int MOVER_SIZE = 50;
-    public static final int MOVER_SPEED = 5;
+    public static final int PADDLE_SPEED = 10;
+    //public static final Paint MOVER_COLOR = Color.PLUM;
+    //public static final int MOVER_SIZE = 50;
+    //public static final int MOVER_SPEED = 5;
 
     // some things needed to remember during game
     private Scene myScene;
-    private ImageView myBouncer;
+    private Ball myBouncer;
     private ImageView myPaddle;
-    private Rectangle myMover;
+    //private Rectangle myMover;
 
     private int dir = 1;
     private int dir2 = 1;
@@ -71,23 +71,24 @@ public class Game extends Application {
         // create one top level collection to organize the things in the scene
         Group root = new Group();
         // make some shapes and set their properties
-        Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
-        myBouncer = new ImageView(image);
-        myBouncer.setX(width / 2 - myBouncer.getBoundsInLocal().getWidth() / 2);
-        myBouncer.setY(height / 2 - myBouncer.getBoundsInLocal().getHeight() / 2);
+        //Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
+        myBouncer = new Ball();
+        //myBouncer.imageview().setX(width / 2 - myBouncer.imageview().getBoundsInLocal().getWidth() / 2);
+        //myBouncer.imageview().setY(height / 2 - myBouncer.imageview().getBoundsInLocal().getHeight() / 2);
 
-        image = new Image(this.getClass().getClassLoader().getResourceAsStream(PADDLE_IMAGE));
+        Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(PADDLE_IMAGE));
         myPaddle = new ImageView(image);
         myPaddle.setX(width / 2 - myPaddle.getBoundsInLocal().getWidth() / 2);
         myPaddle.setY(height - myPaddle.getBoundsInLocal().getHeight()*2);
 
 
 
-        myMover = new Rectangle(width / 2 - MOVER_SIZE / 2, height / 2 - 100, MOVER_SIZE, MOVER_SIZE);
-        myMover.setFill(MOVER_COLOR);
+        //myMover = new Rectangle(width / 2 - MOVER_SIZE / 2, height / 2 - 100, MOVER_SIZE, MOVER_SIZE);
+        //myMover.setFill(MOVER_COLOR);
         // order added to the group is the order in which they are drawn
-        root.getChildren().add(myBouncer);
-        root.getChildren().add(myMover);
+        //root.getChildren().add(myMover);
+
+        root.getChildren().add(myBouncer.imageview());
         root.getChildren().add(myPaddle);
 
         // create a place to see the shapes
@@ -102,39 +103,7 @@ public class Game extends Application {
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
     private void step (double elapsedTime) {
 
-        if(myBouncer.getX()>SIZE || myBouncer.getX()<0) dir *= -1;
-        if(myBouncer.getY()>SIZE || myBouncer.getY()<0) dir2 *= -1;
-
-        if (myPaddle.getBoundsInParent().intersects(myBouncer.getBoundsInParent()) && dir2>0) {
-               dir2*=-1;
-        }
-
-
-
-        // update "actors" attributes
-        myBouncer.setX(myBouncer.getX() + BOUNCER_SPEED * elapsedTime * dir);
-        myBouncer.setY(myBouncer.getY() + BOUNCER_SPEED2 * elapsedTime * dir2);
-
-        myMover.setRotate(myMover.getRotate() - 1);
-
-        // check for collisions
-        // with shapes, can check precisely
-        // NEW Java 10 syntax that simplifies things (but watch out it can make code harder to understand)
-        // var intersection = Shape.intersect(myMover, myGrower);
-        //Shape intersection = Shape.intersect(myMover, myGrower);
-        //if (intersection.getBoundsInLocal().getWidth() != -1) {
-        //   myMover.setFill(HIGHLIGHT);
-        //}
-        //else {
-        //    myMover.setFill(MOVER_COLOR);
-        //}
-        // with images can only check bounding box
-        //if (myGrower.getBoundsInParent().intersects(myBouncer.getBoundsInParent())) {
-         //   myGrower.setFill(HIGHLIGHT);
-        //}
-        //else {
-        //    myGrower.setFill(GROWER_COLOR);
-        //}
+        myBouncer = myBouncer.update(myPaddle,elapsedTime);
 
 
     }
@@ -143,27 +112,18 @@ public class Game extends Application {
     private void handleKeyInput (KeyCode code) {
         if (code == KeyCode.RIGHT) {
             if(myPaddle.getX()>SIZE) myPaddle.setX(0);
-            myPaddle.setX(myPaddle.getX() + MOVER_SPEED);
+            myPaddle.setX(myPaddle.getX() + PADDLE_SPEED);
         }
         else if (code == KeyCode.LEFT) {
             if(myPaddle.getX()<0) myPaddle.setX(SIZE);
-            myPaddle.setX(myPaddle.getX() - MOVER_SPEED);
+            myPaddle.setX(myPaddle.getX() - PADDLE_SPEED);
         }
-        else if (code == KeyCode.UP) {
-            myMover.setY(myMover.getY() - MOVER_SPEED);
-        }
-        else if (code == KeyCode.DOWN) {
-            myMover.setY(myMover.getY() + MOVER_SPEED);
-        }
-        // NEW Java 12 syntax that some prefer (but watch out for the many special cases!)
-        //   https://blog.jetbrains.com/idea/2019/02/java-12-and-intellij-idea/
-        // Note, must set Project Language Level to "13 Preview" under File -> Project Structure
-        // switch (code) {
-        //     case RIGHT -> myMover.setX(myMover.getX() + MOVER_SPEED);
-        //     case LEFT -> myMover.setX(myMover.getX() - MOVER_SPEED);
-        //     case UP -> myMover.setY(myMover.getY() - MOVER_SPEED);
-        //     case DOWN -> myMover.setY(myMover.getY() + MOVER_SPEED);
-        // }
+        //else if (code == KeyCode.UP) {
+        //    myMover.setY(myMover.getY() - MOVER_SPEED);
+        //}
+        //else if (code == KeyCode.DOWN) {
+        //    myMover.setY(myMover.getY() + MOVER_SPEED);
+        //}
     }
 
     // What to do each time a key is pressed
