@@ -14,18 +14,19 @@ public class Ball extends Game {
     private int y_dir;
     private int strength;
     private ImageView imageview;
+    private int life;
 
 
     public Ball(){
-        x_dir = -1;
-        y_dir = 1;
+        x_dir = 1;
+        y_dir = -1;
         strength = 1;
+        life = 3;
         Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         imageview = new ImageView(image);
         imageview.setScaleX(imageview.getScaleX() * strength);
         imageview.setScaleY(imageview.getScaleY() * strength);
-        imageview.setX(SIZE / 2);
-        imageview.setY(10*40);
+        resetPos();
     }
 
     public Ball(Ball b){
@@ -39,6 +40,9 @@ public class Ball extends Game {
     public int getStrength(){
         return strength;
     }
+    public int getLife(){
+        return life;
+    }
 
     private double xpos(){
         return imageview.getX();
@@ -51,10 +55,18 @@ public class Ball extends Game {
         this.strength +=k;
     }
 
+    void resetPos(){
+        imageview.setX(SIZE / 2);
+        imageview.setY(500);
+    }
+
     private void checkdir(ArrayList<Brick> brick, Paddle Paddle){
-        if(imageview.getX()>=SIZE || imageview.getX()<=0){ x_dir *= -1;
-        System.out.println("edges");}
-        if(imageview.getY()>=SIZE || imageview.getY()<=0){ y_dir *= -1;}
+        if(imageview.getX()>=SIZE || imageview.getX()<=0){ x_dir *= -1;}
+        if(imageview.getY()<=0){ y_dir *= -1;}
+        if(imageview.getY()>=SIZE){
+            y_dir *= -1;
+            life = life-1;
+        }
         if(Paddle.imageview().getBoundsInParent().intersects(imageview.getBoundsInParent()) && y_dir>0) y_dir*=-1;
         for(Brick b:brick) {
             if (b.imageview().getBoundsInParent().intersects(imageview.getBoundsInParent())) {
