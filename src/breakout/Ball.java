@@ -67,28 +67,31 @@ public class Ball extends Game {
     }
 
     private void checkdir(){
-        if(imageview.getX()>=SIZE || imageview.getX()<=0){ x_dir *= -1;}
-        if(imageview.getY()<=0){ y_dir *= -1;}
-        if(imageview.getY()>=SIZE){
+        if(imageview.getX()>=SIZE && x_dir>0) x_dir *= -1;
+        if (imageview.getX()<=0 && x_dir<0) x_dir *= -1;
+        if(imageview.getY()<=70 && y_dir<0) y_dir *= -1;
+        if(imageview.getY()>=SIZE && y_dir>0){
             y_dir *= -1;
-            life = life-1;
+            life--;
         }
 
 
     }
 
-    private void checkbrick(Brick b){
+    void checkbrick(Brick b){
         if ((imageview.getLayoutBounds().getMinX() <= b.imageview().getLayoutBounds().getMaxX()
-                && imageview.getLayoutBounds().getMaxX() >= b.imageview().getLayoutBounds().getMaxX()) ||
-                (imageview.getLayoutBounds().getMinX() <= b.imageview().getLayoutBounds().getMinX()
-                        && imageview.getLayoutBounds().getMaxX() >= b.imageview().getLayoutBounds().getMinX())) {
-            x_dir *= -1;
-        }
+                && imageview.getLayoutBounds().getMaxX() >= b.imageview().getLayoutBounds().getMaxX()
+                && x_dir<0)
+                || (imageview.getLayoutBounds().getMinX() <= b.imageview().getLayoutBounds().getMinX()
+                        && imageview.getLayoutBounds().getMaxX() >= b.imageview().getLayoutBounds().getMinX()
+                        && x_dir>0)) x_dir *= -1;
+
         else if ((imageview.getLayoutBounds().getMinY() <= b.imageview().getLayoutBounds().getMaxY()
-                && imageview.getLayoutBounds().getMaxY() >= b.imageview().getLayoutBounds().getMaxY()) ||
-                (imageview.getLayoutBounds().getMinY() <= b.imageview().getLayoutBounds().getMinY()
+                && imageview.getLayoutBounds().getMaxY() >= b.imageview().getLayoutBounds().getMaxY())) y_dir = 1;
+
+        else if ((imageview.getLayoutBounds().getMinY() <= b.imageview().getLayoutBounds().getMinY()
                         && imageview.getLayoutBounds().getMaxY() >= b.imageview().getLayoutBounds().getMinY())) {
-            y_dir *= -1;
+            y_dir = -1;
         }
 
     }
@@ -134,12 +137,8 @@ public class Ball extends Game {
         checkdir();
         checkpaddle(Paddle);
 
-        for(Brick b:brick) {
-            if (b.imageview().getBoundsInParent().intersects(imageview.getBoundsInParent())) {
-                checkbrick(b);
-                b.update(brick, this, Paddle, powerup);
-            }
-        }
+        (new Brick()).update(brick, this, Paddle, powerup);
+
 
         changepos(elapsedTime);
         return this;

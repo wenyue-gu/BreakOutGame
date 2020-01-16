@@ -1,7 +1,5 @@
 package breakout;
 
-import javafx.animation.Animation;
-import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -148,8 +146,10 @@ public class Brick extends Game {
                     else {
                         new_brick = new Brick(1, layout[k][j]);
                     }
-                    new_brick.setBrickPos(new_brick.imageview().getBoundsInLocal().getWidth() / 2 + 100 * j - 50,
-                            new_brick.imageview().getBoundsInLocal().getHeight() / 2 + 40 * k + 40 );
+                    new_brick.setBrickPos(new_brick.imageview().getBoundsInLocal().getWidth() / 2 + 100 * j - 45,
+                            new_brick.imageview().getBoundsInLocal().getHeight() / 2 + 40 * k + 50 );
+                    new_brick.imageview().setFitWidth(new_brick.imageview().getBoundsInLocal().getWidth()-8);
+                    new_brick.imageview().setFitHeight(new_brick.imageview().getBoundsInLocal().getHeight()-8);
                     Bricks.add(new_brick);
                 }
             }
@@ -162,35 +162,36 @@ public class Brick extends Game {
     }
 
 
-    public void update(ArrayList<Brick> bricks, Ball ball, Paddle paddle,ArrayList<Powerup>powerup){
-        this.hit(ball.getStrength(), paddle);
-        if(this.bricklives<=0){
-            if(this.gettype()==2){
-                ball.setStrength(ball.getStrength()+1);
-            }
-            if(this.gettype()==3){
-                paddle.addscore(10);
-            }
-            if(this.gettype()==4){
-                System.out.println("hit");
-                for(Powerup p:powerup) {
-                    System.out.println("here");
-                    if(!p.dropping()){
-                        System.out.println("tried");
-                        p.drop(this.xpos, this.ypos);
-                        break;
+    public void update(ArrayList<Brick> bricks, Ball ball, Paddle paddle,ArrayList<Powerup>powerup) {
+        for (Iterator<Brick> iterator = bricks.iterator(); iterator.hasNext(); ) {
+            Brick temp = iterator.next();
+            if (ball.imageview().getBoundsInParent().intersects(temp.brick.getBoundsInParent())) {
+                ball.checkbrick(temp);
+                temp.hit(ball.getStrength(), paddle);
+                if (temp.bricklives <= 0) {
+                    if (temp.gettype() == 2) {
+                        ball.setStrength(ball.getStrength() + 1);
                     }
+                    if (temp.gettype() == 3) {
+                        paddle.addscore(10);
+                    }
+                    if (temp.gettype() == 4) {
+                        for (Powerup p : powerup) {
+                            if (!p.dropping()) {
+                                p.drop(temp.xpos, temp.ypos);
+                                break;
+                            }
+                        }
+                    }
+                    temp.brick.setImage(null);
+                    iterator.remove();
+                } else {
+                    Image newImage = new Image(getClass().getClassLoader().getResourceAsStream(temp.bricklives + ".gif"));
+                    temp.brick.setImage(newImage);
                 }
             }
-            this.brick.setImage(null);
-            bricks.remove(this);
-        }
-        else{
-            Image newImage = new Image(getClass().getClassLoader().getResourceAsStream(this.bricklives + ".gif"));
-            this.brick.setImage(newImage);
-        }
 
-
+        }
     }
 
 

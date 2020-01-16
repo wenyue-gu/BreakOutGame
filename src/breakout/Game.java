@@ -5,8 +5,6 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -47,7 +45,8 @@ public class Game extends Application {
 
     private boolean is_new_level = true;
     private boolean is_running = false;
-    private boolean is_first_level = true;
+    private boolean is_reseted = true;
+    private boolean splash_sceen = true;
 
 
     private Text starting_text;
@@ -64,15 +63,25 @@ public class Game extends Application {
      */
     @Override
     public void start (Stage stage) {
-        setLevel(stage, 0);
+        myStage = stage;
+        setLevel(-1);
     }
 
-    private void setLevel(Stage stage, int lv) {
-        level = lv;
-        myStage = stage;
-        is_new_level = true;
 
-        myScene = setupGame(SIZE, SIZE, BACKGROUND,level);
+    private void setLevel(int lv) {
+        System.out.println(lv);
+        System.out.println(splash_sceen);
+        if(lv>=0) {
+            level = lv;
+            is_new_level = true;
+            myScene = setupGame(SIZE, SIZE, BACKGROUND, level);
+            starting_text.setVisible(true);
+            losing_text.setVisible(false);
+            winning_text.setVisible(false);
+        }
+        else{
+            myScene = setupsplash(SIZE, SIZE, BACKGROUND);
+        }
 
         myStage.setScene(myScene);
         myStage.setTitle(TITLE);
@@ -82,10 +91,6 @@ public class Game extends Application {
         animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
-
-        starting_text.setVisible(true);
-        losing_text.setVisible(false);
-        winning_text.setVisible(false);
     }
 
     Scene setupGame (int width, int height, Paint background, int lv) {
@@ -94,11 +99,10 @@ public class Game extends Application {
         Powerup p = new Powerup();
         myBricks = brick.create(lv, p);
         myPowerUp = p.getList();
-        if(is_first_level){
+            bouncers.removeAll(bouncers);
             myBouncer = new Ball();
             bouncers.add(myBouncer);
             myPaddle = new Paddle();
-        }
         level = lv;
 
         initialize_text();
@@ -106,6 +110,14 @@ public class Game extends Application {
 
         Scene scene = new Scene(root, width, height, background);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        return scene;
+    }
+
+    Scene setupsplash(int width, int height, Paint background){
+        root = new Group();
+        root.getChildren().add(new Text(300,300,"PRESS"));
+        Scene scene = new Scene(root, width, height, background);
+        scene.setOnKeyPressed(e -> handleSplashInput(e.getCode()));
         return scene;
     }
 
@@ -135,7 +147,6 @@ public class Game extends Application {
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
     void step(double elapsedTime) {
 
-        //myPaddle = myPaddle.update(1);
         for(Ball b : bouncers){
             b.update(myPaddle, myBricks, myPowerUp, elapsedTime);
             if(b.getLife()==0 && bouncers.size()<2){
@@ -148,11 +159,8 @@ public class Game extends Application {
         }
         myBouncer = bouncers.get(0);
 
-        for(Powerup p: myPowerUp){
-            if(p.dropping()) p.update(elapsedTime, myPaddle, myBouncer, myPowerUp);
-        }
+        (new Powerup()).update(elapsedTime, myPaddle, myBouncer, myPowerUp);
 
-        checkclear();
 
         String life = "Life: " + myBouncer.getLife();
         Life.setText(life);
@@ -162,6 +170,8 @@ public class Game extends Application {
 
         String strength = "Strength: " + myBouncer.getStrength();
         Strength.setText(strength);
+
+        checkclear();
 
     }
 
@@ -178,12 +188,45 @@ public class Game extends Application {
             if(!is_running) animation.play();
             is_running = !is_running;
         }
-        if (is_running && code == KeyCode.RIGHT) {
-            myPaddle.imageview().setX(myPaddle.imageview().getX() + myPaddle.getspeed());
+
+        if(is_running) {
+            if (code == KeyCode.RIGHT) {
+                myPaddle.imageview().setX(myPaddle.imageview().getX() + myPaddle.getspeed());
+            }
+            if (code == KeyCode.LEFT) {
+                myPaddle.imageview().setX(myPaddle.imageview().getX() - myPaddle.getspeed());
+            }
+            if (code == KeyCode.C) {
+                new_level();
+            }
+            if (code == KeyCode.L) {
+                myBouncer.giveLife();
+            }
+            if (code == KeyCode.A) {
+                myBouncer.setStrength(myBouncer.getStrength() + 1);
+            }
         }
-        if (is_running && code == KeyCode.LEFT) {
-            myPaddle.imageview().setX(myPaddle.imageview().getX() - myPaddle.getspeed());
+        if(!is_running){
+            if (code == KeyCode.Q) {
+                new_level(0);
+            }
+            if (code == KeyCode.W) {
+                new_level(1);
+            }
+            if (code == KeyCode.E) {
+                new_level(2);
+            }
+            if (code == KeyCode.R) {
+                new_level(3);
+            }
+            if (code == KeyCode.T) {
+                new_level(4);
+            }
+            if (code == KeyCode.S) {
+                reset(-1);
+            }
         }
+
         if(code==KeyCode.B){
             Ball bouncer = new Ball(myBouncer);
             bouncers.add(bouncer);
@@ -192,20 +235,46 @@ public class Game extends Application {
 
     }
 
-    public void checkclear(){
-        if(myBricks.size()==0 && myPowerUp.size()==0){
-            animation.stop();
-            myBouncer.resetPos();
-            myPaddle.resetPos();
-            if(level<3){
-                level++;
-                is_first_level = false;
-                setLevel(myStage,level);
-            }
-            else{
-                winning_text.setVisible(true);
-            }
+
+
+
+    private void handleSplashInput (KeyCode code) {
+        if (code == KeyCode.SPACE) {
+            splash_sceen = false;
+            setLevel(0);
+            starting_text.setVisible(false);
+            animation.play();
+            is_running = true;
+            is_new_level = false;
         }
+    }
+
+    public void checkclear(){
+        if(myBricks.size()==0 && myPowerUp.size()==0)  new_level();
+    }
+
+    private void new_level(){
+        new_level(level+1);
+    }
+
+    private void new_level(int level_n){
+        animation.stop();
+        is_running = false;
+        myBouncer.resetPos();
+        myPaddle.resetPos();
+        level = level_n;
+        if(level<5){
+            is_reseted = false;
+            setLevel(level);
+        }
+        else{
+            winning_text.setVisible(true);
+        }
+    }
+
+    private void reset(int level_n){
+        is_reseted = true;
+        setLevel(level_n);
     }
 
     public void initialize_text(){

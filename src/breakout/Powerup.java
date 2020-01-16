@@ -45,33 +45,33 @@ public class Powerup extends Game{
         this.power.setY(y + (new Brick()).imageview().getBoundsInLocal().getHeight()/2);
         this.power.setVisible(true);
         this.is_dropping = true;
-        System.out.println("drop");
     }
 
-    public void update(double elapsedTime, Paddle Paddle, Ball ball, ArrayList<Powerup> powerup){
-        power.setY(power.getY() + 50 * elapsedTime);
-        check_if_hit(Paddle, ball, powerup);
+    public void update(double elapsedTime, Paddle Paddle, Ball Ball, ArrayList<Powerup> powerup){
+
+        for (Iterator<Powerup> iterator = powerup.iterator(); iterator.hasNext(); ) {
+            Powerup temp = iterator.next();
+            if(temp.dropping())  temp.power.setY(temp.power.getY() + 50 * elapsedTime);
+            if (Paddle.imageview().getBoundsInParent().intersects(temp.power.getBoundsInParent())) {
+                if (temp.type == 1) {
+                    Ball.giveLife();
+                } else {
+                    if (Paddle.getSize() < 1 || Paddle.getSize() > 1) Paddle.changesize(1);
+                    else {
+                        Paddle.changesize((Math.random() <= 0.5) ? 0.5 : 2);
+                    }
+                }
+                temp.power.setImage(null);
+                iterator.remove();
+            } else if (temp.power.getY() > SIZE) {
+                temp.power.setImage(null);
+                iterator.remove();
+            }
+        }
     }
 
     private void check_if_hit(Paddle Paddle, Ball Ball, ArrayList<Powerup> powerup){
-        if(Paddle.imageview().getBoundsInParent().intersects(power.getBoundsInParent())){
-            if(type == 1){
-                Ball.giveLife();
-            }
-            else{
-                if(Paddle.getSize()<1 || Paddle.getSize()>1) Paddle.changesize(1);
-                else {
-                    double temp = (Math.random() <= 0.5) ? 0.5 : 2;
-                    Paddle.changesize(temp);
-                }
-            }
-            this.power.setImage(null);
-            powerup.remove(this);
-        }
-        else if(this.power.getY()>SIZE){
-            this.power.setImage(null);
-            powerup.remove(this);
-        }
+
     }
 
 
