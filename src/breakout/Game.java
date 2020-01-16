@@ -11,7 +11,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -19,7 +18,6 @@ import java.util.*;
 
 
 /**
- * A basic example JavaFX program for the first lab.
  * @author Lucy Gu
  * @author Robert C. Duvall
  */
@@ -33,26 +31,31 @@ public class Game extends Application {
     public static final String BOUNCER_IMAGE = "ball.gif";
     public static final String PADDLE_IMAGE = "pad.gif";
 
-    // some things needed to remember during game
+
+
     private Group root;
     private Scene myScene;
     private Ball myBouncer;
     private Paddle myPaddle;
-    private Brick brick;
     private Timeline animation;
     private int level;
     private Stage myStage;
 
     private ArrayList<Ball> bouncers = new ArrayList<>();
     private ArrayList<Brick> myBricks = new ArrayList<>();
+    private ArrayList<Powerup> myPowerUp = new ArrayList<>();
 
     private boolean is_new_level = true;
     private boolean is_running = false;
+    private boolean is_first_level = true;
 
 
     private Text starting_text;
     private Text losing_text;
     private Text winning_text;
+    private Text Life;
+    private Text Scores;
+    private Text Strength;
 
 
 
@@ -61,20 +64,20 @@ public class Game extends Application {
      */
     @Override
     public void start (Stage stage) {
-        // attach scene to the stage and display it
-        level = 0;
-        setLevel(stage, level, true);
+        setLevel(stage, 0);
     }
 
-    private void setLevel(Stage stage, int lv, boolean first_time) {
+    private void setLevel(Stage stage, int lv) {
         level = lv;
         myStage = stage;
         is_new_level = true;
 
-        myScene = setupGame(SIZE, SIZE, BACKGROUND,level, first_time);
+        myScene = setupGame(SIZE, SIZE, BACKGROUND,level);
+
         myStage.setScene(myScene);
         myStage.setTitle(TITLE);
         myStage.show();
+
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step( SECOND_DELAY));
         animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
@@ -85,22 +88,28 @@ public class Game extends Application {
         winning_text.setVisible(false);
     }
 
-    // Create the game's "scene": what shapes will be in the game and their starting properties
-    Scene setupGame (int width, int height, Paint background, int lv, boolean is_first_level) {
+    Scene setupGame (int width, int height, Paint background, int lv) {
 
-        brick = new Brick();
-        myBricks = brick.create(lv);
+        Brick brick = new Brick();
+        Powerup p = new Powerup();
+        myBricks = brick.create(lv, p);
+        myPowerUp = p.getList();
         if(is_first_level){
             myBouncer = new Ball();
             bouncers.add(myBouncer);
+            myPaddle = new Paddle();
         }
-        myPaddle = new Paddle();
         level = lv;
-        starting_text = new Text(300, 200,"Press Space to Start");
-        losing_text = new Text(300, 200,"You Lost");
-        winning_text = new Text(300, 200,"You won");
 
+        initialize_text();
+        add_to_root();
 
+        Scene scene = new Scene(root, width, height, background);
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        return scene;
+    }
+
+    private void add_to_root(){
         root = new Group();
         for(Ball b : bouncers){
             root.getChildren().add(b.imageview());
@@ -108,38 +117,51 @@ public class Game extends Application {
         for(Brick k : myBricks){
             root.getChildren().add(k.imageview());
         }
+        if(myPowerUp.size()>0) {
+            for (Powerup p : myPowerUp) {
+                root.getChildren().add(p.imageview());
+            }
+        }
         root.getChildren().add(myPaddle.imageview());
         root.getChildren().add(starting_text);
         root.getChildren().add(losing_text);
         root.getChildren().add(winning_text);
-
-
-        // create a place to see the shapes
-        Scene scene = new Scene(root, width, height, background);
-        // respond to input
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-        return scene;
+        root.getChildren().add(Life);
+        root.getChildren().add(Scores);
+        root.getChildren().add(Strength);
     }
 
     // Change properties of shapes in small ways to animate them over time
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
-    void step( double elapsedTime) {
+    void step(double elapsedTime) {
 
-        myPaddle = myPaddle.update(1,1);
-
+        //myPaddle = myPaddle.update(1);
         for(Ball b : bouncers){
-            b.update(myPaddle, myBricks, elapsedTime);
+            b.update(myPaddle, myBricks, myPowerUp, elapsedTime);
             if(b.getLife()==0 && bouncers.size()<2){
                 losing_text.setVisible(true);
                 b.resetPos();
+                myPaddle.resetPos();
+                is_running = false;
                 animation.stop();
             }
         }
+        myBouncer = bouncers.get(0);
 
-        checkclear(myBricks);
+        for(Powerup p: myPowerUp){
+            if(p.dropping()) p.update(elapsedTime, myPaddle, myBouncer, myPowerUp);
+        }
 
+        checkclear();
 
+        String life = "Life: " + myBouncer.getLife();
+        Life.setText(life);
 
+        String score = "Score: " + myPaddle.getscore();
+        Scores.setText(score);
+
+        String strength = "Strength: " + myBouncer.getStrength();
+        Strength.setText(strength);
 
     }
 
@@ -156,10 +178,10 @@ public class Game extends Application {
             if(!is_running) animation.play();
             is_running = !is_running;
         }
-        if (code == KeyCode.RIGHT) {
+        if (is_running && code == KeyCode.RIGHT) {
             myPaddle.imageview().setX(myPaddle.imageview().getX() + myPaddle.getspeed());
         }
-        if (code == KeyCode.LEFT) {
+        if (is_running && code == KeyCode.LEFT) {
             myPaddle.imageview().setX(myPaddle.imageview().getX() - myPaddle.getspeed());
         }
         if(code==KeyCode.B){
@@ -170,13 +192,15 @@ public class Game extends Application {
 
     }
 
-    public void checkclear(ArrayList<Brick> b){
-        if(b.size()==0){
+    public void checkclear(){
+        if(myBricks.size()==0 && myPowerUp.size()==0){
             animation.stop();
             myBouncer.resetPos();
+            myPaddle.resetPos();
             if(level<3){
                 level++;
-                setLevel(myStage,level, false);
+                is_first_level = false;
+                setLevel(myStage,level);
             }
             else{
                 winning_text.setVisible(true);
@@ -184,7 +208,21 @@ public class Game extends Application {
         }
     }
 
+    public void initialize_text(){
+        starting_text = new Text(300, 200,"Press Space to Start");
+        starting_text.setX(SIZE/2 - starting_text.getBoundsInParent().getWidth()/2);
+        losing_text = new Text(300, 200,"You Lost");
+        losing_text.setX(SIZE/2 - losing_text.getBoundsInParent().getWidth()/2);
+        winning_text = new Text(300, 200,"You won");
+        winning_text.setX(SIZE/2 - winning_text.getBoundsInParent().getWidth()/2);
+        String life = "Life: " + myBouncer.getLife();
+        Life = new Text(10, 25, life);
+        String score = "Score: " + myPaddle.getscore();
+        Scores = new Text(500,25,score);
+        String strength = "Strength: " + myBouncer.getStrength();
+        Strength = new Text(500,40,strength);
 
+    }
 
 
 
