@@ -3,6 +3,7 @@ package breakout;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Ball extends Game {
@@ -23,8 +24,6 @@ public class Ball extends Game {
         Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
                 BOUNCER_IMAGE)));
         imageview = new ImageView(image);
-        imageview.setScaleX(imageview.getScaleX() * Math.pow(1.2, strength-1));
-        imageview.setScaleY(imageview.getScaleY() *  Math.pow(1.2, strength-1));
         resetPos();
     }
 
@@ -46,16 +45,21 @@ public class Ball extends Game {
     }
 
     public void setStrength(int k){
-        this.strength=k;
+        if(k<10) strength=k;
+        else strength = 9;
+    }
+    public void setSpeed(int level){
+        x_speed = 150 + level * 50;
+        y_speed = 150 + level * 50;
     }
     public void giveLife(){
         this.life++;
     }
 
     void resetPos(){
-        imageview.setX(SIZE / 2.0);
-        imageview.setY(500);
-        this.x_dir = 1;
+        imageview.setX(SIZE / 2.0 - imageview.getBoundsInParent().getWidth()/2);
+        imageview.setY(550);
+        this.x_dir = (Math.random()<=0.5) ? -1:1;
         this.y_dir = -1;
     }
 
@@ -125,5 +129,6 @@ public class Ball extends Game {
         checkIfHitPaddle(Paddle);
         (new Brick()).checkIfHit(brick, this, Paddle, powerup);
         changepos(elapsedTime);
+
     }
 }

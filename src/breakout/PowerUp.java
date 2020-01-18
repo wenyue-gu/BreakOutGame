@@ -12,7 +12,7 @@ public class PowerUp extends Game{
     boolean is_dropping;
 
     public PowerUp(){
-        type = (Math.random() <= 0.5) ? 1 : 2;
+        type = (new Random()).nextInt(3) + 1;
         Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
                 this.type + "type.gif")));
         power = new ImageView(image);
@@ -65,6 +65,8 @@ public class PowerUp extends Game{
                     Paddle.changesize((Math.random() <= 0.5) ? 0.5 : 2);
                 }
                 break;
+            case 3:
+                Paddle.changespeed(1);
         }
     }
 }

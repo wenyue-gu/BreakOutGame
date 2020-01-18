@@ -43,35 +43,38 @@ public class TextGroup extends Game{
                 "Red-tainted bricks are ordinary bricks. They do not drop power ups.\n" +
                 "Red bricks have hardness status varying from 1 to 9\n" +
                 "The deeper the red color, the harder it is to break\n" +
-                "Hitting a brick with a strength of X will subtract X from the brick's life\n", 88, 60);
+                "Hitting a brick with a strength of X will subtract X from the brick's life\n", 88, 40);
         rule_special_brick = SetXCenter("Special Bricks:\n\n" +
                 "Green bricks awards 50 points\n" +
                 "Blue bricks award 1 strength status to bouncer\n" +
-                "Yellow bricks drop power-up\n", 88, 180);
+                "Yellow bricks drop power-up\n", 88, 150);
         rule_bouncer = SetXCenter("Bouncer & Paddle:\n\n" +
                 "Initial strength, or attack power, of ball is 1\n" +
                 "Initial life of ball is 3\n" +
+                "The higher the level, the faster the speed of the bouncer\n" +
                 "Hitting different area of the paddle changes the direction of the ball\n" +
                 "Hitting the bottom of the screen deducts one life\n" +
-                "Press LEFT and RIGHT to move paddle", 88, 280);
+                "Press LEFT and RIGHT to control the direction of the paddle\n" +
+                "Press DOWN to stop the paddle from moving", 88, 240);
         rule_powerup = SetXCenter("Powerup:\n\n"+
                 "Pink powerup adds a life, \n" +
-                "Yellow powerup might both increase or reduce the size of the paddle", 88, 410);
+                "Yellow powerup might both increase or reduce the size of the paddle\n" +
+                "Red powerup increases the speed of the paddle", 88, 390);
 
         cheat_headline = SetXCenter("While the game is actively going on:",80);
 
         cheat_running = SetXCenter( "Press C to clear round\n" +
-                "You will enter next level and increase score as if you finished this level yourself\n" +
-                "HOWEVER, no power up effect will be distributed (ie, no extra point, life, etc)\n\n" +
+                "You will enter next level and your score will increase as if you cleared all bricks in this level\n" +
+                "HOWEVER, no power up effect will be distributed (ie, no extra point, life, strength, etc)\n\n" +
                 "Press L to give the bouncer an extra life\n\n" +
-                "Press A to give the bouncer an extra strength status\n\n" +
+                "Press A to give the bouncer an extra strength status (max strength = 9)\n\n" +
                 "Press P to pause game and press P again to resume\n\n",120);
 
         cheat_headline2 = SetXCenter("While the game is paused:",280);
 
-        cheat_paused = SetXCenter( "Press Q to enter TEST level (level 0)\n\n" +
-                "Press W, E, R, T to enter level 1, 2, 3, and bonus level respectively\n\n" +
-                "Press F to finish game\n" +
+        cheat_paused = SetXCenter( "Press Q, W, E, R, T to enter level 0, 1, 2, 3, and bonus level respectively\n" +
+                "Note: score and other status will not reset or update in the process\n\n" +
+                "Press F to finish game and calculate score\n" +
                 "Note: if you are currently on level 1, 2, or 3, ending game with F is a auto lose.",320);
 
         losing_text = SetXCenter("You lost!",200);
@@ -84,6 +87,7 @@ public class TextGroup extends Game{
 
     }
 
+    //Methods that help with constructor
     private Text SetXCenter(String s, int x, int y){
         Text t = new Text(s);
         t.setX(x);
@@ -97,15 +101,15 @@ public class TextGroup extends Game{
         return t;
     }
 
-
-
-    public void updateDuringGame(Ball ball, Paddle paddle){
-        Life.setText("Life: " + ball.getLife());
-        Scores.setText("Score: " + paddle.getscore());
-        Strength.setText("Strength: " + ball.getStrength());
-
+    //getter methods
+    public boolean displayingRule(){
+        return displayingRule;
+    }
+    public boolean displayingCheat(){
+        return displayingCheat;
     }
 
+    //add everything to group
     public Group addAll(Group group){
         Collections.addAll(group.getChildren(), splash_screen_text1,
                 press_for_rule,
@@ -125,17 +129,25 @@ public class TextGroup extends Game{
                 Life,
                 Scores,
                 Strength
-                );
+        );
         return group;
     }
 
+
+    //what to display in each situation
+    public void updateDuringGame(Ball ball, Paddle paddle){
+        Life.setText("Life: " + ball.getLife());
+        Scores.setText("Score: " + paddle.getscore());
+        Strength.setText("Strength: " + ball.getStrength());
+
+    }
 
     public void displayStarter(){
         displayNothing();
 
         displayStatus(true);
         press_for_start.setVisible(true);
-        press_for_start.setY(200);
+        press_for_start.setY(480);
     }
 
     public void displaySplash(){
@@ -150,7 +162,6 @@ public class TextGroup extends Game{
 
         displayStatus(true);
     }
-
 
     public void displayEnd(Ball ball, Paddle paddle, boolean win){
         displayNothing();
@@ -202,7 +213,7 @@ public class TextGroup extends Game{
         press_for_cheat.setY(540);
     }
 
-
+    //setting text visibility for text that should appear/disappear at the same time/on the same screen
     private void displayStatus(boolean d){
         Life.setVisible(d);
         Strength.setVisible(d);
@@ -238,20 +249,12 @@ public class TextGroup extends Game{
         press_to_restart.setVisible(false);
     }
 
-
     private void displayNothing(){
         notEndginText();
         displayStatus(false);
         displayRule(false);
         displayCheat(false);
         displayInitial(false);
-    }
-
-    public boolean displayingRule(){
-        return displayingRule;
-    }
-    public boolean displayingCheat(){
-        return displayingCheat;
     }
 
 }

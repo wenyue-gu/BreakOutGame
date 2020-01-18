@@ -7,15 +7,19 @@ import java.util.Objects;
 
 public class Paddle extends Game {
 
-    private int speed;
+    private double speed;
     private double size;
     private ImageView imageview;
     private int score;
+    private int dir;
+    private boolean isMoving;
 
     public Paddle(){
         score = 0;
-        speed = 20;
+        speed = 200;
         size = 1;
+        dir = 1;
+        isMoving = false;
         Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
                 PADDLE_IMAGE)));
         imageview = new ImageView(image);
@@ -49,6 +53,9 @@ public class Paddle extends Game {
         this.size = k;
         imageview.setFitWidth(100 * size);
     }
+    public void changespeed(double k){
+        this.speed = speed + k*50;
+    }
 
     public void edgeCheck(){
         if(imageview.getX()>SIZE*0.9) imageview.setX(-0.1*SIZE);
@@ -56,8 +63,22 @@ public class Paddle extends Game {
     }
 
     public void resetPos(){
+        imageview.setFitWidth(100);
         imageview.setX(SIZE / 2.0 - imageview.getBoundsInLocal().getWidth() / 2);
         imageview.setY(SIZE - imageview.getBoundsInLocal().getHeight()*2);
-        imageview.setFitWidth(100);
+        isMoving = false;
+    }
+
+    public void move(double elapsedTime){
+        if(isMoving) {
+            imageview.setX(imageview.getX() + elapsedTime*speed * dir);
+        }
+    }
+
+    public void setDir(int d){
+        dir = d;
+    }
+    public void setMoving(boolean moving){
+        isMoving = moving;
     }
 }

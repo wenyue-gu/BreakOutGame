@@ -11,6 +11,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -69,16 +70,16 @@ public class Game extends Application {
     }
 
     private Scene setActiveGame(int width, int height, Paint background, int lv) {
-        Brick brick = new Brick();
         PowerUp p = new PowerUp();
-        myBricks = brick.createPane(lv, p);
+        myBricks = (new Brick()).createPane(lv, p);
         myPowerUp = p.getList();
+        myBouncer.setSpeed(lv);
         level = lv;
         is_new_level = true;
         add_to_root();
         myText.displayStarter();
         Scene scene = new Scene(root, width, height, background);
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        scene.setOnKeyPressed(e -> handleKeyInputDuringGame(e.getCode()));
         return scene;
     }
 
@@ -142,6 +143,8 @@ public class Game extends Application {
 
         myText.updateDuringGame(myBouncer,myPaddle);
 
+        myPaddle.move(elapsedTime);
+
         checkLevelClear();
         checklose();
 
@@ -156,7 +159,13 @@ public class Game extends Application {
         }
     }
 
-    private void handleKeyInput (KeyCode code) {
+    private void handleKeyInputDuringGame(KeyCode code) {
+        startAndPause(code);
+        if(is_running) inputWhilePlaying(code);
+        else inputWhilePause(code);
+    }
+
+    private void startAndPause(KeyCode code){
         if(is_new_level && code==KeyCode.SPACE){
             animation.play();
             is_running = true;
@@ -168,49 +177,55 @@ public class Game extends Application {
             if(!is_running) animation.play();
             is_running = !is_running;
         }
+    }
 
-        if(is_running) {
-            switch(code) {
-                case RIGHT:
-                    myPaddle.imageview().setX(myPaddle.imageview().getX() + myPaddle.getspeed());
-                    break;
-                case LEFT:
-                    myPaddle.imageview().setX(myPaddle.imageview().getX() - myPaddle.getspeed());
-                    break;
-                case C:
-                    SkipRound();
-                    break;
-                case L:
-                    myBouncer.giveLife();
-                    break;
-                case A:
-                    myBouncer.setStrength(myBouncer.getStrength() + 1);
-                    break;
-            }
+    private void inputWhilePlaying(KeyCode code){
+        switch(code) {
+            case RIGHT:
+                myPaddle.setMoving(true);
+                myPaddle.setDir(1);
+                break;
+            case LEFT:
+                myPaddle.setMoving(true);
+                myPaddle.setDir(-1);
+                break;
+            case DOWN:
+                myPaddle.setMoving(false);
+                break;
+            case C:
+                SkipRound();
+                break;
+            case L:
+                myBouncer.giveLife();
+                break;
+            case A:
+                myBouncer.setStrength(myBouncer.getStrength() + 1);
+                break;
         }
-        if(!is_running){
-            switch (code) {
-                case Q:
-                    new_level(0);
-                    break;
-                case W:
-                    new_level(1);
-                    break;
-                case E:
-                    new_level(2);
-                    break;
-                case R:
-                    new_level(3);
-                    break;
-                case T:
-                    new_level(4);
-                    break;
-                case F:
-                    game_over = true;
-                    if(level!=4) setSplashScreen(1);
-                    else setSplashScreen(2);
-                    break;
-            }
+    }
+
+    private void inputWhilePause(KeyCode code){
+        switch (code) {
+            case Q:
+                new_level(0);
+                break;
+            case W:
+                new_level(1);
+                break;
+            case E:
+                new_level(2);
+                break;
+            case R:
+                new_level(3);
+                break;
+            case T:
+                new_level(4);
+                break;
+            case F:
+                game_over = true;
+                if(level!=4) setSplashScreen(1);
+                else setSplashScreen(2);
+                break;
         }
     }
 
@@ -257,21 +272,18 @@ public class Game extends Application {
     }
 
     private void new_level(int level_n){
-        animation.stop();
-        is_running = false;
         myBouncer.resetPos();
         myPaddle.resetPos();
-        if(level_n<5){
+        animation.stop();
+        is_running = false;
+        if(level_n<=4){
             displayActiveGame(level_n);
         }
         else{
-            animation.stop();
             setSplashScreen(2);
             game_over = true;
-            is_running = false;
         }
     }
-
 
     /**
      * Start the program.
