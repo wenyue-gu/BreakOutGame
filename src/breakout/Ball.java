@@ -5,7 +5,6 @@ import javafx.scene.image.ImageView;
 
 import java.util.*;
 
-
 public class Ball extends Game {
 
     private int x_speed = 150;
@@ -16,22 +15,17 @@ public class Ball extends Game {
     private ImageView imageview;
     private int life;
 
-
     public Ball(){
         x_dir = 1;
         y_dir = -1;
         strength = 1;
         life = 3;
-        Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
+        Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
+                BOUNCER_IMAGE)));
         imageview = new ImageView(image);
         imageview.setScaleX(imageview.getScaleX() * Math.pow(1.2, strength-1));
         imageview.setScaleY(imageview.getScaleY() *  Math.pow(1.2, strength-1));
         resetPos();
-    }
-
-    public Ball(Ball b){
-        this();
-        setStrength(b.strength);
     }
 
     public ImageView imageview(){
@@ -54,76 +48,71 @@ public class Ball extends Game {
     public void setStrength(int k){
         this.strength=k;
     }
-
     public void giveLife(){
         this.life++;
     }
 
     void resetPos(){
-        imageview.setX(SIZE / 2);
+        imageview.setX(SIZE / 2.0);
         imageview.setY(500);
         this.x_dir = 1;
         this.y_dir = -1;
     }
 
-    private void checkdir(){
+    private void checkXYDirection(){
         if(imageview.getX()>=SIZE && x_dir>0) x_dir *= -1;
-        if (imageview.getX()<=0 && x_dir<0) x_dir *= -1;
+        if(imageview.getX()<=0 && x_dir<0) x_dir *= -1;
         if(imageview.getY()<=70 && y_dir<0) y_dir *= -1;
         if(imageview.getY()>=SIZE && y_dir>0){
             y_dir *= -1;
             life--;
         }
-
-
     }
 
-    void checkbrick(Brick b){
-        if ((imageview.getLayoutBounds().getMinX() <= b.imageview().getLayoutBounds().getMaxX()
-                && imageview.getLayoutBounds().getMaxX() >= b.imageview().getLayoutBounds().getMaxX()
-                && x_dir<0)
-                || (imageview.getLayoutBounds().getMinX() <= b.imageview().getLayoutBounds().getMinX()
-                        && imageview.getLayoutBounds().getMaxX() >= b.imageview().getLayoutBounds().getMinX()
-                        && x_dir>0)) x_dir *= -1;
+    public void whenHitBrick(Brick b){
 
-        else if ((imageview.getLayoutBounds().getMinY() <= b.imageview().getLayoutBounds().getMaxY()
-                && imageview.getLayoutBounds().getMaxY() >= b.imageview().getLayoutBounds().getMaxY())) y_dir = 1;
+        double ballminx = imageview.getLayoutBounds().getMinX();
+        double ballmaxx = imageview.getLayoutBounds().getMaxX();
+        double ballminy = imageview.getLayoutBounds().getMinY();
+        double ballmaxy = imageview.getLayoutBounds().getMaxY();
+        double brickminx = b.imageview().getLayoutBounds().getMinX();
+        double brickmaxx = b.imageview().getLayoutBounds().getMaxX();
+        double brickminy = b.imageview().getLayoutBounds().getMinY();
+        double brickmaxy = b.imageview().getLayoutBounds().getMaxY();
 
-        else if ((imageview.getLayoutBounds().getMinY() <= b.imageview().getLayoutBounds().getMinY()
-                        && imageview.getLayoutBounds().getMaxY() >= b.imageview().getLayoutBounds().getMinY())) {
-            y_dir = -1;
-        }
+        if ((ballminx <= brickmaxx && ballmaxx >= brickmaxx && x_dir<0)
+                || (ballminx <= brickminx && ballmaxx >= brickminx && x_dir>0)) x_dir *= -1;
 
+        else if ((ballminy <= brickmaxy && ballmaxy >= brickmaxy && y_dir<0)
+                || (ballminy <= brickminy && ballmaxy >= brickminy && y_dir>0))  y_dir *= -1;
     }
 
-    private void checkpaddle(Paddle Paddle){
+    private void checkIfHitPaddle(Paddle Paddle){
         if(Paddle.imageview().getBoundsInParent().intersects(imageview.getBoundsInParent()) && y_dir>0) {
             double bouncerx = imageview.getX();
-            double padwidth = Paddle.imageview().getBoundsInLocal().getWidth() / 6;
+            double PaddlePortion = Paddle.imageview().getBoundsInLocal().getWidth() / 6;
             double padx = Paddle.imageview().getX();
-            if (bouncerx <= padx +   padwidth) {
+            if (bouncerx <= padx + PaddlePortion) {
                 x_dir = -1.1;
                 y_dir = -0.9;
-            } else if (bouncerx <= padx +2* padwidth) {
+            } else if (bouncerx <= padx +2* PaddlePortion) {
                 x_dir = -0.5;
                 y_dir = -1.3;
-            } else if (bouncerx >= padwidth + 2* padwidth && bouncerx <=padx + 3* padwidth) {
-                y_dir = -1;
-            } else if (bouncerx >= padwidth + 3* padwidth && bouncerx <=padx + 4* padwidth) {
-                y_dir = -1;
-            } else if (bouncerx >= padwidth + 4* padwidth && bouncerx <=padx + 5* padwidth) {
+            } else if (bouncerx >= PaddlePortion + 2* PaddlePortion && bouncerx <=padx + 3* PaddlePortion) {
+                y_dir *= -1;
+            } else if (bouncerx >= PaddlePortion + 3* PaddlePortion && bouncerx <=padx + 4* PaddlePortion) {
+                y_dir *= -1;
+            } else if (bouncerx >= PaddlePortion + 4* PaddlePortion && bouncerx <=padx + 5* PaddlePortion) {
                 x_dir = 0.5;
                 y_dir = -1.3;
-            } else if (bouncerx >= padx + 5* padwidth) {
+            } else if (bouncerx >= padx + 5* PaddlePortion) {
                 x_dir = 1.1;
                 y_dir = -0.9;
             }
             else{
-                y_dir = -1;
+                y_dir *= -1;
             }
         }
-
-
     }
 
     private void changepos(double elapsedTime){
@@ -131,19 +120,10 @@ public class Ball extends Game {
         imageview.setY(ypos() + y_speed * elapsedTime * y_dir);
     }
 
-
-
-    public Ball update(Paddle Paddle, ArrayList<Brick> brick, ArrayList<Powerup> powerup, double elapsedTime){
-        checkdir();
-        checkpaddle(Paddle);
-
-        (new Brick()).update(brick, this, Paddle, powerup);
-
-
+    public void update(Paddle Paddle, ArrayList<Brick> brick, ArrayList<PowerUp> powerup, double elapsedTime){
+        checkXYDirection();
+        checkIfHitPaddle(Paddle);
+        (new Brick()).checkIfHit(brick, this, Paddle, powerup);
         changepos(elapsedTime);
-        return this;
     }
-
-
-
 }

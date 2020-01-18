@@ -5,32 +5,25 @@ import javafx.scene.image.ImageView;
 
 import java.util.*;
 
-
-public class Powerup extends Game{
+public class PowerUp extends Game{
     private int type;
     private ImageView power;
-    private ArrayList<Powerup> powerups = new ArrayList<>();
+    private ArrayList<PowerUp> PoweUpList = new ArrayList<>();
     boolean is_dropping;
 
-    public Powerup(){
-        double rand = Math.random();
-        is_dropping = false;
-        if(rand<0.5){
-            type = 1;
-        }
-        else{
-            type = 2;
-        }
-        Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(this.type + "type.gif"));
+    public PowerUp(){
+        type = (Math.random() <= 0.5) ? 1 : 2;
+        Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
+                this.type + "type.gif")));
         power = new ImageView(image);
         power.setVisible(false);
     }
 
     public void addtolist(){
-        powerups.add(new Powerup());
+        PoweUpList.add(new PowerUp());
     }
-    public ArrayList<Powerup> getList(){
-        return powerups;
+    public ArrayList<PowerUp> getList(){
+        return PoweUpList;
     }
     public ImageView imageview(){
         return power;
@@ -40,27 +33,18 @@ public class Powerup extends Game{
     }
 
     public void drop(double x, double y){
-
         this.power.setX(x + (new Brick()).imageview().getBoundsInLocal().getWidth()/2);
         this.power.setY(y + (new Brick()).imageview().getBoundsInLocal().getHeight()/2);
         this.power.setVisible(true);
         this.is_dropping = true;
     }
 
-    public void update(double elapsedTime, Paddle Paddle, Ball Ball, ArrayList<Powerup> powerup){
-
-        for (Iterator<Powerup> iterator = powerup.iterator(); iterator.hasNext(); ) {
-            Powerup temp = iterator.next();
+    public void update(double elapsedTime, Paddle Paddle, Ball Ball, ArrayList<PowerUp> powerup){
+        for (Iterator<PowerUp> iterator = powerup.iterator(); iterator.hasNext(); ) {
+            PowerUp temp = iterator.next();
             if(temp.dropping())  temp.power.setY(temp.power.getY() + 50 * elapsedTime);
             if (Paddle.imageview().getBoundsInParent().intersects(temp.power.getBoundsInParent())) {
-                if (temp.type == 1) {
-                    Ball.giveLife();
-                } else {
-                    if (Paddle.getSize() < 1 || Paddle.getSize() > 1) Paddle.changesize(1);
-                    else {
-                        Paddle.changesize((Math.random() <= 0.5) ? 0.5 : 2);
-                    }
-                }
+                temp.giveEffect(Paddle, Ball);
                 temp.power.setImage(null);
                 iterator.remove();
             } else if (temp.power.getY() > SIZE) {
@@ -70,10 +54,17 @@ public class Powerup extends Game{
         }
     }
 
-    private void check_if_hit(Paddle Paddle, Ball Ball, ArrayList<Powerup> powerup){
-
+    private void giveEffect(Paddle Paddle, Ball Ball) {
+        switch (type) {
+            case 1:
+                Ball.giveLife();
+                break;
+            case 2:
+                if (Paddle.getSize()!=1) Paddle.changesize(1);
+                else {
+                    Paddle.changesize((Math.random() <= 0.5) ? 0.5 : 2);
+                }
+                break;
+        }
     }
-
-
-
 }

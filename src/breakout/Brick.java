@@ -5,113 +5,84 @@ import javafx.scene.image.ImageView;
 
 import java.util.*;
 
-
 public class Brick extends Game {
     private int bricklives;
     private int type;
     private ImageView brick;
     private double ypos;
     private double xpos;
-    private int[][] lv1 = new int[][]{
-            {0,3,0,0,3,0},
-            {1,1,2,2,1,1},
-            {0,3,1,1,3,0},
-            {1,-2,0,0,-1,1},
-            {1,0,2,2,0,1},
-            {0,1,1,1,1,0},
-            {0,1,0,0,1,0},
-            {0,1,-3,1,1,0},
-            {0,0,1,1,0,0}};
-
 
     private int[][] lv0 = new int[][]{
-            {0,0,0,0,5,0},
+            {15,15,15,15,15,15},
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
             {0,0,0,0,0,0},
-            {0,0,0,0,0,0},
-            {0,-3,-3,-3,-3,0},
-            {0,-3,-3,-3,-3,0}};
+            {0,41,21,31,41,0},
+            {0,21,31,41,21,0},
+            {0,31,41,31,41,0}};
 
-
+    private int[][] lv1 = new int[][]{
+            {0,13,0,0,13,0},
+            {11,11,12,12,11,11},
+            {0,13,11,11,13,0},
+            {11,21,0,0,31,11},
+            {11,0,12,12,0,11},
+            {0,11,11,11,11,0},
+            {0,11,0,0,11,0},
+            {0,11,41,11,11,0},
+            {0,0,11,11,0,0}};
 
     private int[][] lv2 = new int[][]{
-            {5,0,0,0,0,5},
-            {0,5,2,2,5,0},
-            {-1,4,0,0,4,-3},
-            {0,5,0,0,5,0},
-            {0,2,3,3,2,0},
-            {0,5,-2,-1,5,0},
-            {0,2,2,2,2,0},
-            {1,2,5,5,2,1},
-            {0,0,1,1,0,0}};
+            {15,0,0,0,0,15},
+            {0,15,12,12,15,0},
+            {21,14,0,0,14,41},
+            {0,15,0,0,15,0},
+            {0,12,13,13,12,0},
+            {0,15,31,41,15,0},
+            {0,12,12,12,12,0},
+            {11,12,15,15,12,11},
+            {0,0,11,11,0,0}};
 
     private int[][] lv3 = new int[][]{
-            {10,0,-2,-2,0,10},
-            {10,10,0,0,10,10},
-            {10,8,8,8,8,10},
-            {7,7,0,0,7,7},
-            {10,0,10,10,0,10},
-            {0,-3,-3,-3,-3,0},
-            {5,5,5,5,5,5},
-            {0,10,5,5,10,0},
-            {0,0,-1,5,0,0}};
+            {19,0,21,31,0,19},
+            {19,19,0,0,19,19},
+            {19,18,18,18,18,19},
+            {17,17,0,0,17,17},
+            {19,0,19,19,0,19},
+            {0,41,41,31,41,0},
+            {15,15,15,15,15,15},
+            {0,19,15,15,19,0},
+            {0,0,21,21,0,0}};
 
     private int[][] lv4 = new int[][]{
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10},
-            {10,10,10,10,10,10}};
-
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19},
+            {19,19,19,19,19,19}};
 
     private ArrayList<int[][]> lvs = new ArrayList<>();
-
 
     public Brick(){
         this(1,1);
     }
-
     public Brick(int kind, int lives){
+        Collections.addAll(lvs, lv0,lv1,lv2,lv3,lv4);
         type = kind;
         bricklives = lives;
-        Image brickImage = null;
-        if(kind==1) {
-            brickImage = new Image(getClass().getClassLoader().getResourceAsStream(lives + ".gif"));
-        }
-        else if(kind==2){
-            brickImage = new Image(getClass().getClassLoader().getResourceAsStream("x.gif"));
-        }
-        else if(kind==3){
-            brickImage = new Image(getClass().getClassLoader().getResourceAsStream("y.gif"));
-        }
-        else if(kind==4){
-            brickImage = new Image(getClass().getClassLoader().getResourceAsStream("z.gif"));
-        }
-        brick = new ImageView(brickImage);
-        lvs.add(lv0);
-        lvs.add(lv1);
-        lvs.add(lv2);
-        lvs.add(lv3);
-        lvs.add(lv4);
+        brick = new ImageView(new Image(Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream (
+                        "kind" + kind + "life" + lives + ".gif"))));
     }
 
-    public void hit(int strength, Paddle paddle){
-        if(bricklives>strength){
-            paddle.addscore(strength);
-            bricklives =  bricklives-strength;
-        }
-        else{
-            paddle.addscore(bricklives);
-            bricklives = 0;
-        }
-
+    public int getBricklives() {
+        return bricklives;
     }
 
     public ImageView imageview() {
@@ -125,31 +96,18 @@ public class Brick extends Game {
         this.brick.setY(ypos);
     }
 
-    public ArrayList<Brick> create(int level, Powerup p){
+    public ArrayList<Brick> createPane(int level, PowerUp p){
         int[][] layout = lvs.get(level);
         ArrayList<Brick> Bricks = new ArrayList<>();
-
         for(int k = 0; k<layout.length;k++){
             for(int j = 0; j<layout[0].length;j++){
-                if(layout[k][j]!=0) {
-                    Brick new_brick;
-                    if(layout[k][j]==-1){
-                        new_brick = new Brick(2, 1);
-                    }
-                    else if(layout[k][j]==-2){
-                        new_brick = new Brick(3, 1);
-                    }
-                    else if(layout[k][j]==-3){
-                        new_brick = new Brick(4, 1);
-                        p.addtolist();
-                    }
-                    else {
-                        new_brick = new Brick(1, layout[k][j]);
-                    }
+                if(layout[k][j]>0) {
+                    Brick new_brick = new Brick(layout[k][j] / 10, layout[k][j] % 10);
+                    if (layout[k][j] / 10 == 4) p.addtolist();
                     new_brick.setBrickPos(new_brick.imageview().getBoundsInLocal().getWidth() / 2 + 100 * j - 45,
-                            new_brick.imageview().getBoundsInLocal().getHeight() / 2 + 40 * k + 50 );
-                    new_brick.imageview().setFitWidth(new_brick.imageview().getBoundsInLocal().getWidth()-8);
-                    new_brick.imageview().setFitHeight(new_brick.imageview().getBoundsInLocal().getHeight()-8);
+                            new_brick.imageview().getBoundsInLocal().getHeight() / 2 + 40 * k + 50);
+                    new_brick.imageview().setFitWidth(new_brick.imageview().getBoundsInLocal().getWidth() - 8);
+                    new_brick.imageview().setFitHeight(new_brick.imageview().getBoundsInLocal().getHeight() - 8);
                     Bricks.add(new_brick);
                 }
             }
@@ -157,46 +115,50 @@ public class Brick extends Game {
         return Bricks;
     }
 
-    public int gettype(){
-        return type;
-    }
-
-
-    public void update(ArrayList<Brick> bricks, Ball ball, Paddle paddle,ArrayList<Powerup>powerup) {
+    public void checkIfHit(ArrayList<Brick> bricks, Ball ball, Paddle paddle, ArrayList<PowerUp>powerup) {
         for (Iterator<Brick> iterator = bricks.iterator(); iterator.hasNext(); ) {
             Brick temp = iterator.next();
             if (ball.imageview().getBoundsInParent().intersects(temp.brick.getBoundsInParent())) {
-                ball.checkbrick(temp);
-                temp.hit(ball.getStrength(), paddle);
+                ball.whenHitBrick(temp);
+                temp.updateBrickLife(ball.getStrength(), paddle);
                 if (temp.bricklives <= 0) {
-                    if (temp.gettype() == 2) {
-                        ball.setStrength(ball.getStrength() + 1);
-                    }
-                    if (temp.gettype() == 3) {
-                        paddle.addscore(10);
-                    }
-                    if (temp.gettype() == 4) {
-                        for (Powerup p : powerup) {
-                            if (!p.dropping()) {
-                                p.drop(temp.xpos, temp.ypos);
-                                break;
-                            }
-                        }
-                    }
+                    temp.dropPowerUps(ball, paddle, powerup);
                     temp.brick.setImage(null);
                     iterator.remove();
                 } else {
-                    Image newImage = new Image(getClass().getClassLoader().getResourceAsStream(temp.bricklives + ".gif"));
-                    temp.brick.setImage(newImage);
+                    temp.brick.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
+                            "kind" + temp.type + "life" + temp.bricklives + ".gif"))));
                 }
             }
-
         }
     }
 
+    private void updateBrickLife(int strength, Paddle paddle){
+        if(bricklives>strength){
+            paddle.addscore(strength);
+            bricklives =  bricklives-strength;
+            return;
+        }
+        paddle.addscore(bricklives);
+        bricklives = 0;
+    }
 
-
-
-
-
+    private void dropPowerUps(Ball ball, Paddle paddle, ArrayList<PowerUp>powerup){
+        switch(type) {
+            case 2:
+                ball.setStrength(ball.getStrength() + 1);
+                break;
+            case 3:
+                paddle.addscore(50);
+                break;
+            case 4:
+                for (PowerUp p : powerup) {
+                    if (!p.dropping()) {
+                        p.drop(xpos, ypos);
+                        break;
+                    }
+                }
+                break;
+        }
+    }
 }
