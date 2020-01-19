@@ -4,8 +4,13 @@ package breakout;
 import javafx.scene.Group;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
+
+/**
+ * @author Lucy Gu
+ */
 public class TextGroup extends Game{
     private boolean displayingRule;
     private boolean displayingCheat;
@@ -54,12 +59,13 @@ public class TextGroup extends Game{
                 "The higher the level, the faster the speed of the bouncer\n" +
                 "Hitting different area of the paddle changes the direction of the ball\n" +
                 "Hitting the bottom of the screen deducts one life\n" +
-                "Press LEFT and RIGHT to control the direction of the paddle\n" +
+                "Bouncer speed increases every level\n" +
+                "Press LEFT and RIGHT to control the direction of paddle movement\n" +
                 "Press DOWN to stop the paddle from moving", 88, 240);
         rule_powerup = SetXCenter("Powerup:\n\n"+
                 "Pink powerup adds a life, \n" +
                 "Yellow powerup might both increase or reduce the size of the paddle\n" +
-                "Red powerup increases the speed of the paddle", 88, 390);
+                "Red powerup increases the speed of the paddle", 88, 410);
 
         cheat_headline = SetXCenter("While the game is actively going on:",80);
 
@@ -68,14 +74,15 @@ public class TextGroup extends Game{
                 "HOWEVER, no power up effect will be distributed (ie, no extra point, life, strength, etc)\n\n" +
                 "Press L to give the bouncer an extra life\n\n" +
                 "Press A to give the bouncer an extra strength status (max strength = 9)\n\n" +
-                "Press P to pause game and press P again to resume\n\n",120);
+                "Press P to pause game and press P again to resume\n\n" +
+                "If you click anywhere on the screen during play you will get an extra ball with life 1\n",120);
 
-        cheat_headline2 = SetXCenter("While the game is paused:",280);
+        cheat_headline2 = SetXCenter("While the game is paused:",290);
 
-        cheat_paused = SetXCenter( "Press Q, W, E, R, T to enter level 0, 1, 2, 3, and bonus level respectively\n" +
+        cheat_paused = SetXCenter( "Press 0 through 4 to enter level 0, 1, 2, 3, and bonus (4) level respectively\n" +
                 "Note: score and other status will not reset or update in the process\n\n" +
                 "Press F to finish game and calculate score\n" +
-                "Note: if you are currently on level 1, 2, or 3, ending game with F is a auto lose.",320);
+                "Note: if you are currently on level 1, 2, or 3, ending game with F is a auto lose.",330);
 
         losing_text = SetXCenter("You lost!",200);
         press_to_restart = SetXCenter("Press S to go back to Welcome screen", 400);
@@ -87,7 +94,6 @@ public class TextGroup extends Game{
 
     }
 
-    //Methods that help with constructor
     private Text SetXCenter(String s, int x, int y){
         Text t = new Text(s);
         t.setX(x);
@@ -101,7 +107,10 @@ public class TextGroup extends Game{
         return t;
     }
 
-    //getter methods
+    /**
+     * Check if the game is displaying rule/cheat screen
+     * @return a boolean value
+     */
     public boolean displayingRule(){
         return displayingRule;
     }
@@ -109,7 +118,6 @@ public class TextGroup extends Game{
         return displayingCheat;
     }
 
-    //add everything to group
     public Group addAll(Group group){
         Collections.addAll(group.getChildren(), splash_screen_text1,
                 press_for_rule,
@@ -134,14 +142,21 @@ public class TextGroup extends Game{
     }
 
 
-    //what to display in each situation
-    public void updateDuringGame(Ball ball, Paddle paddle){
-        Life.setText("Life: " + ball.getLife());
+    /**
+     * Actively update text as the game is going on
+     * @param balls ALL balls that exist on screen (the maximum life status is displayed)
+     */
+    public void updateDuringGame(ArrayList<Ball> balls, Paddle paddle){
+        int i = (new Ball()).maxLife(balls);
+        Life.setText("Life: " + i);
         Scores.setText("Score: " + paddle.getscore());
-        Strength.setText("Strength: " + ball.getStrength());
+        Strength.setText("Strength: " + balls.get(0).getStrength());
 
     }
 
+    /**
+     * Display the starter as one enter or reset level
+     */
     public void displayStarter(){
         displayNothing();
 
@@ -150,6 +165,9 @@ public class TextGroup extends Game{
         press_for_start.setY(480);
     }
 
+    /**
+     * Display the Welcome screen
+     */
     public void displaySplash(){
         displayNothing();
 
@@ -157,26 +175,35 @@ public class TextGroup extends Game{
         press_for_start.setY(300);
     }
 
+    /**
+     * Display status during game
+     */
     public void displayGame(){
         displayNothing();
 
         displayStatus(true);
     }
 
-    public void displayEnd(Ball ball, Paddle paddle, boolean win){
+    /**
+     * Displaying end text
+     * @param win whether the game is won or not - displays winning or losing text based on this input
+     */
+    public void displayEnd(ArrayList<Ball> balls, Paddle paddle, boolean win){
         displayNothing();
-
         winning_text.setVisible(win);
         losing_text.setVisible(!win);
         press_to_restart.setVisible(true);
-
         Scores.setVisible(true);
-        Scores.setText("Total Score = Score " + paddle.getscore() + " + Life " + ball.getLife() +
-                " * 30 = " + (paddle.getscore()+ball.getLife()*30));
+        int maxLife = (new Ball()).maxLife(balls);
+        Scores.setText("Total Score = Score " + paddle.getscore() + " + Life " + maxLife +
+                " * 30 = " + (paddle.getscore()+maxLife));
         Scores.setX(SIZE/2.0 - Scores.getBoundsInParent().getWidth()/2);
         Scores.setY(300);
     }
 
+    /**
+     * Displays rule screen
+     */
     public void rules(){
         displayNothing();
 
@@ -186,6 +213,9 @@ public class TextGroup extends Game{
         moveDownPress(1);
     }
 
+    /**
+     * Displays cheat codes
+     */
     public void cheatSheet(){
         displayNothing();
 
@@ -208,12 +238,13 @@ public class TextGroup extends Game{
                 break;
 
         }
-        press_for_rule.setY(520);
-        press_for_start.setY(500);
-        press_for_cheat.setY(540);
+        press_for_rule.setY(540);
+        press_for_start.setY(520);
+        press_for_cheat.setY(560);
     }
 
-    //setting text visibility for text that should appear/disappear at the same time/on the same screen
+
+
     private void displayStatus(boolean d){
         Life.setVisible(d);
         Strength.setVisible(d);

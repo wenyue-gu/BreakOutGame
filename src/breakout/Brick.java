@@ -7,6 +7,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+/**
+ * @author Lucy Gu
+ * Dependencies: It extends the Game class
+ *               Methods use information and calls functions from Ball, Powerup, and Paddle class
+ */
 public class Brick extends Game {
     private int bricklives;
     private int type;
@@ -27,21 +32,22 @@ public class Brick extends Game {
                         "kind" + kind + "life" + lives + ".gif"))));
     }
 
+    /**
+     * Getter methods
+     */
     public int getBricklives() {
         return bricklives;
     }
-
     public ImageView imageview() {
         return brick;
     }
 
-    public void setBrickPos(double x, double y){
-        xpos = x;
-        ypos = y;
-        this.brick.setX(xpos);
-        this.brick.setY(ypos);
-    }
-
+    /**
+     * Create the layout of bricks in each level
+     * @param level An integer that indicates the level of the configuration, NEED TO BE between 0 and 4
+     * @param p a powerup object that stores the information of powerups required for this level
+     * @return An Arraylist of bricks with each position, life, and type specified by the level document
+     */
     public ArrayList<Brick> createPane(int level, PowerUp p){
         ArrayList<Brick> Bricks = new ArrayList<>();
         Scanner scanner = null;
@@ -67,14 +73,30 @@ public class Brick extends Game {
         return Bricks;
     }
 
-    public void checkIfHit(ArrayList<Brick> bricks, Ball ball, Paddle paddle, ArrayList<PowerUp>powerup) {
+    private void setBrickPos(double x, double y){
+        xpos = x;
+        ypos = y;
+        this.brick.setX(xpos);
+        this.brick.setY(ypos);
+    }
+
+
+    /**
+     * Checks if the ball touches the brick
+     * If the ball touches the brick, brick loses life according to the ball's attack
+     * If the brick's life reach 0, the brick is removed, and powerup drop/special effect is triggered
+     * @param bricks should have at least one element
+     * @param powerup should have at least one element
+     * @param balls should have at least one element
+     */
+    public void checkIfHit(ArrayList<Brick> bricks, Ball ball, Paddle paddle, ArrayList<PowerUp>powerup, ArrayList<Ball> balls) {
         for (Iterator<Brick> iterator = bricks.iterator(); iterator.hasNext(); ) {
             Brick temp = iterator.next();
             if (ball.imageview().getBoundsInParent().intersects(temp.brick.getBoundsInParent())) {
                 ball.whenHitBrick(temp);
                 temp.updateBrickLife(ball.getStrength(), paddle);
                 if (temp.bricklives <= 0) {
-                    temp.dropPowerUps(ball, paddle, powerup);
+                    temp.dropPowerUps(ball, paddle, powerup, balls);
                     temp.brick.setImage(null);
                     iterator.remove();
                 } else {
@@ -95,10 +117,20 @@ public class Brick extends Game {
         bricklives = 0;
     }
 
-    private void dropPowerUps(Ball ball, Paddle paddle, ArrayList<PowerUp>powerup){
+    /**
+     * Activate effect depending on the type of the brick broken
+     * Case 2 and 3: directly change the paddle and ball status
+     * Case 4: go through the list of powerup, drop the first that isn't dropping
+     * @param ball The bouncer that is being checked
+     * @param powerup list of powerup for dropping
+     * @param balls The arraylist of all balls that exist on screen;
+     *              since strength change in any ball is inherited by all balls this parameter is require
+     *
+     */
+    private void dropPowerUps(Ball ball, Paddle paddle, ArrayList<PowerUp>powerup, ArrayList<Ball> balls){
         switch(type) {
             case 2:
-                ball.setStrength(ball.getStrength() + 1);
+                ball.setStrength(ball.getStrength() + 1, balls);
                 break;
             case 3:
                 paddle.addscore(50);
@@ -106,7 +138,7 @@ public class Brick extends Game {
             case 4:
                 for (PowerUp p : powerup) {
                     if (!p.dropping()) {
-                        p.drop(xpos, ypos);
+                        p.drop(xpos + brick.getBoundsInLocal().getWidth()/2, ypos + brick.getBoundsInLocal().getHeight()/2);
                         break;
                     }
                 }
