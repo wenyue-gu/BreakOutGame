@@ -7,8 +7,18 @@ import java.util.*;
 
 /**
  * @author Lucy Gu
+ * The ball class creates a single ball
+ * The x direction at which the ball travels is randomly selected between left and right, but
+ * the initial y direction is up
+ * The initial speed in both x and y direction is 150
+ * The initial life status is 3 and strength status is 1
+ *
+ * Example usage: Ball b = new Ball(); This will create a ball that has the image ball.gif
+ *                and travels either in the up-left or up-right direction
+ *
  * Dependencies: It extends the Game class
  *               Methods use information and calls functions from  Paddle, brick, and powerup class
+ *
  */
 public class Ball extends Game {
 
@@ -30,7 +40,7 @@ public class Ball extends Game {
     }
 
     /**
-     * Duplicate a ball with the same strength, image, etc, BUT has only 1 life
+     * Duplicate a ball with the same strength, BUT has only 1 life
      */
     public Ball(Ball b){
         life = 1;

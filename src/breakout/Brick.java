@@ -9,9 +9,22 @@ import java.util.*;
 
 /**
  * @author Lucy Gu
+ *
+ * The brick class creates a single brick defined by its type and life status.
+ * By default, the brick sits at (0,0), has a type and life of 1, and a corresponding
+ * image in the resources folder defined by kind1life1.gif
+ *
+ * Example usage: Brick b = new Brick(3,1,0,0) creates a brick located at the top left corner of the screen
+ *                with its image defined by kind3life1.gif
+ *
  * Dependencies: It extends the Game class
- *               Methods use information and calls functions from Ball, Powerup, and Paddle class
+ *               Methods within this class use information and calls functions from Ball, Powerup, and Paddle class
+ *
+ * Assumptions: Since there are only a few images that has been defined in the resources,
+ *              it its expected that the kind status would be between 1 and 4, and life
+ *              status between 1 and 9.
  */
+
 public class Brick extends Game {
     private int bricklives;
     private int type;
@@ -21,15 +34,21 @@ public class Brick extends Game {
 
 
     public Brick(){
-        this(1,1);
+        this(1,1,0,0);
     }
 
-    public Brick(int kind, int lives){
+    public Brick(int kind, int lives, double x, double y){
+        xpos = x;
+        ypos = y;
         type = kind;
         bricklives = lives;
         brick = new ImageView(new Image(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
                         "kind" + kind + "life" + lives + ".gif"))));
+        brick.setX(xpos + brick.getBoundsInLocal().getWidth());
+        brick.setY(ypos + brick.getBoundsInLocal().getHeight());
+        brick.setFitWidth(brick.getBoundsInLocal().getWidth() - 8);
+        brick.setFitHeight(brick.getBoundsInLocal().getHeight() - 8);
     }
 
     /**
@@ -60,26 +79,14 @@ public class Brick extends Game {
             for (int j = 0; j < 6; j++) {
                 int a = scanner.nextInt();
                 if (a != 0) {
-                    Brick new_brick = new Brick(a / 10, a % 10);
+                    Brick new_brick = new Brick(a / 10, a % 10, 100 * j - 97, 40 * i + 50);
                     if (a / 10 == 4) p.addtolist();
-                    new_brick.setBrickPos(new_brick.imageview().getBoundsInLocal().getWidth() / 2 + 100 * j - 45,
-                            new_brick.imageview().getBoundsInLocal().getHeight() / 2 + 40 * i + 50);
-                    new_brick.imageview().setFitWidth(new_brick.imageview().getBoundsInLocal().getWidth() - 8);
-                    new_brick.imageview().setFitHeight(new_brick.imageview().getBoundsInLocal().getHeight() - 8);
                     Bricks.add(new_brick);
                 }
             }
         }
         return Bricks;
     }
-
-    private void setBrickPos(double x, double y){
-        xpos = x;
-        ypos = y;
-        this.brick.setX(xpos);
-        this.brick.setY(ypos);
-    }
-
 
     /**
      * Checks if the ball touches the brick
@@ -136,10 +143,12 @@ public class Brick extends Game {
                 paddle.addscore(50);
                 break;
             case 4:
-                for (PowerUp p : powerup) {
-                    if (!p.dropping()) {
-                        p.drop(xpos + brick.getBoundsInLocal().getWidth()/2, ypos + brick.getBoundsInLocal().getHeight()/2);
-                        break;
+                if(powerup.size()>0) {
+                    for (PowerUp p : powerup) {
+                        if (!p.dropping()) {
+                            p.drop(xpos + brick.getBoundsInLocal().getWidth() / 2, ypos + brick.getBoundsInLocal().getHeight() / 2);
+                            break;
+                        }
                     }
                 }
                 break;

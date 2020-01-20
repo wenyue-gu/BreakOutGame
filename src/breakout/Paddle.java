@@ -7,6 +7,11 @@ import java.util.Objects;
 
 /**
  * @author Lucy Gu
+ * The paddle class creates a paddle
+ *
+ * Example usage: Paddle p = new Paddle(); This will create a paddle of normal size located at the bottom center
+ *                of the screen
+ *
  * Dependencies: It extends the Game class
  */
 public class Paddle extends Game {

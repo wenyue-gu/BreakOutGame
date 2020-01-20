@@ -7,8 +7,15 @@ import java.util.*;
 
 /**
  * @author Lucy Gu
+ *
+ * The powerup class creates a single powerup
+ * The powerup determines its type randomly, and select the according image
+ *
+ * Example usage: PowerUp p = new PowerUp();
+ *
  * Dependencies: It extends the Game class
  *               Methods use information and calls functions from Ball and Paddle class
+ *
  */
 public class PowerUp extends Game{
     private int type;
@@ -26,7 +33,7 @@ public class PowerUp extends Game{
     }
 
     /**
-     * Add a new powerup to the list
+     * Add a new powerup to the list of powerups recorded
      */
     public void addtolist(){
         PoweUpList.add(new PowerUp());
