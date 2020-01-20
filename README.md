@@ -61,6 +61,11 @@ kind1lifen.gif (n from 1 to 9), kind2life1.gif, kind3life1.gif, kind4life1.gif i
 
 #### Known Bugs:  
 There was once my intelli j crashed because I clicked the screen too many times  
+Sometimes an error like this appear (but it doesn't interfere with the game play itself): 
+2020-01-19 21:46:02.924 java[69842:40368257] *** Assertion failure in void assertRunningOnAppKitThread
+(void)(), /BuildRoot/Library/Caches/com.apple.xbs/Sources/ViewBridge/ViewBridge-401.1/
+ViewBridgeUtilities.m:912
+
 
 #### Extra feature:  
 Clicking screen to get an extra clone ball with 1 life

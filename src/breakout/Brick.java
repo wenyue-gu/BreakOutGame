@@ -38,17 +38,18 @@ public class Brick extends Game {
     }
 
     public Brick(int kind, int lives, double x, double y){
-        xpos = x;
-        ypos = y;
         type = kind;
         bricklives = lives;
         brick = new ImageView(new Image(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
                         "kind" + kind + "life" + lives + ".gif"))));
-        brick.setX(xpos + brick.getBoundsInLocal().getWidth());
-        brick.setY(ypos + brick.getBoundsInLocal().getHeight());
+        brick.setX(x  + brick.getBoundsInLocal().getWidth());
+        brick.setY(y + brick.getBoundsInLocal().getHeight());
         brick.setFitWidth(brick.getBoundsInLocal().getWidth() - 8);
         brick.setFitHeight(brick.getBoundsInLocal().getHeight() - 8);
+        xpos = brick.getX();
+        ypos = brick.getY();
+
     }
 
     /**
