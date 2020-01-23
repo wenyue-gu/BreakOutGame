@@ -18,6 +18,8 @@ import java.util.*;
  *
  */
 public class PowerUp extends Game{
+    public static final int NUM_POWERUP = 3;
+
     private int type;
     private ImageView power;
     private ArrayList<PowerUp> PoweUpList = new ArrayList<>();
@@ -25,7 +27,7 @@ public class PowerUp extends Game{
     private int speed = 50;
 
     public PowerUp(){
-        type = (new Random()).nextInt(3) + 1;
+        type = (new Random()).nextInt(NUM_POWERUP) + 1;
         Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
                 this.type + "type.gif")));
         power = new ImageView(image);
@@ -52,9 +54,8 @@ public class PowerUp extends Game{
         return is_dropping;
     }
 
-
     /**
-     * put the powerup to where it should be (more specifically, at the brick that was hit)
+     * put the powerup to where it should be
      * @param x should be valid double
      * @param y should be valid double
      */

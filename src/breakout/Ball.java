@@ -184,6 +184,11 @@ public class Ball extends Game {
         }
     }
 
+    private void changepos(double elapsedTime){
+        imageview.setX(xpos() + x_speed * elapsedTime * x_dir);
+        imageview.setY(ypos() + y_speed * elapsedTime * y_dir);
+    }
+
     /**
      * Update all necessary information during normal game play
      * (such as checking if ball hit edge of screen, paddle, brick, and other normal movements)
@@ -195,8 +200,4 @@ public class Ball extends Game {
         changepos(elapsedTime);
     }
 
-    private void changepos(double elapsedTime){
-        imageview.setX(xpos() + x_speed * elapsedTime * x_dir);
-        imageview.setY(ypos() + y_speed * elapsedTime * y_dir);
-    }
 }

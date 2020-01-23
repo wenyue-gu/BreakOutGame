@@ -26,14 +26,13 @@ public class Game extends Application {
     public static final Paint BACKGROUND = Color.SNOW;
     public static final String BOUNCER_IMAGE = "ball.gif";
     public static final String PADDLE_IMAGE = "pad.gif";
-
+    public static final int MAX_LEVEL = 4;
 
     private Group root;
     private Scene myScene;
     private Timeline animation;
     private Stage myStage;
 
-    private Ball myBouncer;
     private Paddle myPaddle;
     private ArrayList<Brick> myBricks = new ArrayList<>();
     private ArrayList<Ball> bouncers = new ArrayList<>();
@@ -52,8 +51,7 @@ public class Game extends Application {
     @Override
     public void start (Stage stage) {
         myStage = stage;
-        myBouncer = new Ball();
-        bouncers.add(myBouncer);
+        bouncers.add(new Ball());
         myPaddle = new Paddle();
         setSplashScreen(SIZE, SIZE, BACKGROUND, 0);
     }
@@ -205,18 +203,18 @@ public class Game extends Application {
 
         is_running = false;
         myPaddle.resetPos();
-        myBouncer = bouncers.get(0);
-        myBouncer.resetPos();
+        Ball iball = bouncers.get(0);
+        iball.resetPos();
         animation.pause();
         for(Ball b:bouncers){
-            if(!b.equals(myBouncer)) b.imageview().setImage(null);
+            if(!b.equals(iball)) b.imageview().setImage(null);
         }
         bouncers.removeAll(bouncers);
-        bouncers.add(myBouncer);
+        bouncers.add(iball);
         myText.displayStarter();
         isResetedLevel = true;
         if(new_level) {
-            if (level_n <= 4) {
+            if (level_n <= MAX_LEVEL) {
                 displayActiveGame(level_n);
             } else {
                 setSplashScreen(2);
@@ -303,7 +301,7 @@ public class Game extends Application {
                 break;
             case F:
                 game_over = true;
-                if(level!=4) setSplashScreen(1);
+                if(level!=MAX_LEVEL) setSplashScreen(1);
                 else setSplashScreen(2);
                 break;
         }
@@ -331,9 +329,8 @@ public class Game extends Application {
         }
         else{
             if(code==KeyCode.S){
-                myBouncer = new Ball();
                 bouncers = new ArrayList<>();
-                bouncers.add(myBouncer);
+                bouncers.add(new Ball());
                 myPaddle = new Paddle();
                 setSplashScreen(0);
             }

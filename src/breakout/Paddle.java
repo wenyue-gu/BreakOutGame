@@ -2,8 +2,7 @@ package breakout;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Lucy Gu
@@ -27,8 +26,7 @@ public class Paddle extends Game {
         speed = 200;
         size = 1;
         dir = 0;
-        Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
-                PADDLE_IMAGE)));
+        Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(PADDLE_IMAGE)));
         imageview = new ImageView(image);
         imageview.setFitWidth(100*size);
         imageview.setFitHeight(15);
@@ -44,9 +42,6 @@ public class Paddle extends Game {
     }
     public int getscore(){
         return score;
-    }
-    public void addscore(int s){
-        score = score + s;
     }
     public double getSize(){
         return size;
@@ -67,6 +62,14 @@ public class Paddle extends Game {
      */
     public void changespeed(double k){
         this.speed = speed + k*50;
+    }
+
+    /**
+     * Increase score by s
+     * @param s
+     */
+    public void addscore(int s){
+        score += s;
     }
 
     /**
@@ -102,5 +105,4 @@ public class Paddle extends Game {
     public void setDir(int d){
         dir = d;
     }
-
 }

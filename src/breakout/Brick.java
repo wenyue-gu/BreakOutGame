@@ -45,19 +45,21 @@ public class Brick extends Game {
                         "kind" + kind + "life" + lives + ".gif"))));
         brick.setX(x  + brick.getBoundsInLocal().getWidth());
         brick.setY(y + brick.getBoundsInLocal().getHeight());
-        brick.setFitWidth(brick.getBoundsInLocal().getWidth() - 8);
-        brick.setFitHeight(brick.getBoundsInLocal().getHeight() - 8);
         xpos = brick.getX();
         ypos = brick.getY();
 
     }
 
     /**
-     * Getter methods
+     * Get the life status of the brick
      */
     public int getBricklives() {
         return bricklives;
     }
+
+    /**
+     * Get the imageview of the brick
+     */
     public ImageView imageview() {
         return brick;
     }
@@ -71,11 +73,13 @@ public class Brick extends Game {
     public ArrayList<Brick> createPane(int level, PowerUp p){
         ArrayList<Brick> Bricks = new ArrayList<>();
         Scanner scanner = null;
+
         try {
             scanner = new Scanner(new File("lv"+level+".txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 6; j++) {
                 int a = scanner.nextInt();
