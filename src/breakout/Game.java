@@ -67,9 +67,7 @@ public class Game extends Application {
     }
 
     private Scene setActiveGame(int width, int height, Paint background, int lv) {
-        PowerUp p = new PowerUp();
-        myBricks = (new Brick()).createPane(lv, p);
-        myPowerUp = p.getList();
+        (new Brick()).createPane(myBricks,lv, myPowerUp);
         for(Ball b:bouncers) { b.setSpeed(lv); }
         level = lv;
         isResetedLevel = true;
@@ -211,6 +209,7 @@ public class Game extends Application {
         }
         bouncers.removeAll(bouncers);
         bouncers.add(iball);
+        myBricks.removeAll(myBricks);
         myText.displayStarter();
         isResetedLevel = true;
         if(new_level) {

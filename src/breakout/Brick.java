@@ -26,6 +26,9 @@ import java.util.*;
  */
 
 public class Brick extends Game {
+    public final int ROW = 9;
+    public final int COLUMN = 6;
+
     private int bricklives;
     private int type;
     private ImageView brick;
@@ -67,11 +70,10 @@ public class Brick extends Game {
     /**
      * Create the layout of bricks in each level
      * @param level An integer that indicates the level of the configuration, NEED TO BE between 0 and 4
-     * @param p a powerup object that stores the information of powerups required for this level
-     * @return An Arraylist of bricks with each position, life, and type specified by the level document
+     * @param Bricks is modified (have elements added into) to represent all bricks on the pane
+     * @param powerups is modified to represent all powerups that exist in the level
      */
-    public ArrayList<Brick> createPane(int level, PowerUp p){
-        ArrayList<Brick> Bricks = new ArrayList<>();
+    public void createPane(ArrayList<Brick> Bricks, int level, ArrayList<PowerUp> powerups){
         Scanner scanner = null;
 
         try {
@@ -80,17 +82,19 @@ public class Brick extends Game {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 6; j++) {
+        int powerupCount = 0;
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COLUMN; j++) {
                 int a = scanner.nextInt();
                 if (a != 0) {
                     Brick new_brick = new Brick(a / 10, a % 10, 100 * j - 97, 40 * i + 50);
-                    if (a / 10 == 4) p.addtolist();
+                    if (a / 10 == 4) powerupCount++;
                     Bricks.add(new_brick);
                 }
             }
         }
-        return Bricks;
+        (new PowerUp()).createList(powerups,powerupCount);
+        System.out.println(powerups.size());
     }
 
     /**
@@ -118,6 +122,7 @@ public class Brick extends Game {
             }
         }
     }
+
 
     private void updateBrickLife(int strength, Paddle paddle){
         if(bricklives>strength){

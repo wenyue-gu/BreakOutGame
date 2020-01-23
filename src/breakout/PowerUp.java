@@ -22,7 +22,6 @@ public class PowerUp extends Game{
 
     private int type;
     private ImageView power;
-    private ArrayList<PowerUp> PoweUpList = new ArrayList<>();
     boolean is_dropping;
     private int speed = 50;
 
@@ -35,21 +34,15 @@ public class PowerUp extends Game{
     }
 
     /**
-     * Add a new powerup to the list of powerups recorded
+     * Get the imageview
      */
-    public void addtolist(){
-        PoweUpList.add(new PowerUp());
-    }
-
-    /**
-     * Getter methods
-     */
-    public ArrayList<PowerUp> getList(){
-        return PoweUpList;
-    }
     public ImageView imageview(){
         return power;
     }
+
+    /**
+     * Check if the powerup is currently dropping
+     */
     public boolean dropping(){
         return is_dropping;
     }
@@ -67,8 +60,20 @@ public class PowerUp extends Game{
     }
 
     /**
-     * Updates the status of the powerup image
-     * If the powerup is supposed to be dropping, move the powerup image down to "drop" it
+     * Creates a new list of powerup with size number of new elements in it
+     * @param powerups
+     * @param size
+     */
+    public void createList(ArrayList<PowerUp> powerups, int size){
+        powerups.removeAll(powerups);
+        for(int i = 0; i<size; i++){
+            powerups.add(new PowerUp());
+        }
+    }
+
+    /**
+     * Updates the status of the powerup
+     * If the powerup is supposed to be dropping, move the powerup image to "drop" it
      * If the powerup touches the Paddle, the powerup is "used" so remove it and activate effect
      * If the powerup reaches the bottom of the screen, it also should effectively disappear
      */
@@ -87,9 +92,11 @@ public class PowerUp extends Game{
         }
     }
 
-
     /**
-     * Activate effects: add 1 life, change paddle size, and change paddle speed
+     * Activate effects depending on the type of powerup generated:
+     * Type 1 adds 1 life to the ball;
+     * Type 2 changes paddle size;
+     * Type 3 changes paddle speed
      */
     private void giveEffect(Paddle Paddle, Ball Ball) {
         switch (type) {

@@ -52,20 +52,36 @@ public class Ball extends Game {
     }
 
     /**
-     * Getters
+     * Get the imageview of the ball
      */
     public ImageView imageview(){
         return imageview;
     }
+
+    /**
+     * Get the strength status
+     */
     public int getStrength(){
         return strength;
     }
+
+    /**
+     * Get the life status
+     */
     public int getLife(){
         return life;
     }
+
+    /**
+     * Get the x position of the ball
+     */
     private double xpos(){
         return imageview.getX();
     }
+
+    /**
+     * Get the y position of the ball
+     */
     private double ypos(){
         return imageview.getY();
     }
