@@ -77,12 +77,12 @@ public class TextGroup extends Game{
                 "Press P to pause game and press P again to resume\n\n" +
                 "If you click anywhere on the screen during play you will get an extra ball with life 1\n",120);
 
-        cheat_headline2 = SetXCenter("While the game is paused:",290);
+        cheat_headline2 = SetXCenter("While the game is paused:",310);
 
         cheat_paused = SetXCenter( "Press 0 through 4 to enter level 0, 1, 2, 3, and bonus (4) level respectively\n" +
                 "Note: score and other status will not reset or update in the process\n\n" +
                 "Press F to finish game and calculate score\n" +
-                "Note: if you are currently on level 1, 2, or 3, ending game with F is a auto lose.",330);
+                "Note: if you are currently on level 1, 2, or 3, ending game with F is a auto lose.",350);
 
         losing_text = SetXCenter("You lost!",200);
         press_to_restart = SetXCenter("Press S to go back to Welcome screen", 400);
