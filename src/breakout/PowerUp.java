@@ -18,8 +18,7 @@ import java.util.*;
  *
  */
 public class PowerUp extends Game{
-    public static final int NUM_POWERUP = 3;
-
+    private int NUM_POWERUP = 3;
     private int type;
     private ImageView power;
     boolean is_dropping;

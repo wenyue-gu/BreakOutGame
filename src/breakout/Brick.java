@@ -17,17 +17,16 @@ import java.util.*;
  * Example usage: Brick b = new Brick(3,1,0,0) creates a brick located at the top left corner of the screen
  *                with its image defined by kind3life1.gif
  *
- * Dependencies: It extends the Game class
- *               Methods within this class use information and calls functions from Ball, Powerup, and Paddle class
+ * Dependencies: Methods within this class use information and calls functions from Ball, Powerup, and Paddle class
  *
  * Assumptions: Since there are only a few images that has been defined in the resources,
  *              it its expected that the kind status would be between 1 and 4, and life
  *              status between 1 and 9.
  */
 
-public class Brick extends Game {
-    public final int ROW = 9;
-    public final int COLUMN = 6;
+public class Brick{
+    private int ROW = 9;
+    private int COLUMN = 6;
 
     private int bricklives;
     private int type;
@@ -71,9 +70,8 @@ public class Brick extends Game {
      * Create the layout of bricks in each level
      * @param level An integer that indicates the level of the configuration, NEED TO BE between 0 and 4
      * @param Bricks is modified (have elements added into) to represent all bricks on the pane
-     * @param powerups is modified to represent all powerups that exist in the level
      */
-    public void createPane(ArrayList<Brick> Bricks, int level, ArrayList<PowerUp> powerups){
+    public int createPane(ArrayList<Brick> Bricks, int level){
         Scanner scanner = null;
 
         try {
@@ -93,8 +91,7 @@ public class Brick extends Game {
                 }
             }
         }
-        (new PowerUp()).createList(powerups,powerupCount);
-        System.out.println(powerups.size());
+        return powerupCount;
     }
 
     /**

@@ -57,7 +57,7 @@ public class Game extends Application {
     }
 
     private void displayActiveGame(int lv) {
-        myScene = setActiveGame(SIZE, SIZE, BACKGROUND, lv);
+        setActiveGame(SIZE, SIZE, BACKGROUND, lv);
 
         myStage.setScene(myScene);
         myStage.setTitle(TITLE + " Level "+ lv);
@@ -66,17 +66,15 @@ public class Game extends Application {
         setAnimation();
     }
 
-    private Scene setActiveGame(int width, int height, Paint background, int lv) {
-        (new Brick()).createPane(myBricks,lv, myPowerUp);
+    private void setActiveGame(int width, int height, Paint background, int lv) {
+        int powerupCount = (new Brick()).createPane(myBricks,lv);
+        (new PowerUp()).createList(myPowerUp,powerupCount);
         for(Ball b:bouncers) { b.setSpeed(lv); }
         level = lv;
         isResetedLevel = true;
         add_to_root();
         myText.displayStarter();
-        Scene scene = new Scene(root, width, height, background);
-        scene.setOnKeyPressed(e -> handleKeyInputDuringGame(e.getCode()));
-        scene.setOnMouseClicked(e -> handleMouseInput());
-        return scene;
+        createScene(root,width,height,background);
     }
 
     /**
@@ -91,12 +89,17 @@ public class Game extends Application {
         (temp).getChildren().addAll(root);
         temp.getChildren().add(b.imageview());
         root = temp;
-        myScene = new Scene(root, width, height, background);
-        myScene.setOnKeyPressed(e -> handleKeyInputDuringGame(e.getCode()));
-        myScene.setOnMouseClicked(e -> handleMouseInput());
+        createScene(root,width,height,background);
+
         myStage.setScene(myScene);
 
         setAnimation();
+    }
+
+    private void createScene(Group g, int width, int height, Paint background){
+        myScene = new Scene(g, width, height, background);
+        myScene.setOnKeyPressed(e -> handleKeyInputDuringGame(e.getCode()));
+        myScene.setOnMouseClicked(e -> handleMouseInput());
     }
 
     private void setAnimation(){
