@@ -9,12 +9,15 @@ import java.util.*;
  * @author Lucy Gu
  *
  * The powerup class creates a single powerup
- * The powerup determines its type randomly, and select the according image
  *
- * Example usage: PowerUp p = new PowerUp();
+ * Example usage: PowerUp p = new PowerUp(); The type of the powerup generated will be random,
+ *                and the image will match this randomly selected type. The powerup, when first
+ *                generated, will not show up on screen, until a special brick is hit and then it
+ *                will begin to drop from the brick's center.
  *
- * Dependencies: It extends the Game class
- *               Methods use information and calls functions from Ball and Paddle class
+ * Dependencies: It depends on Ball and Paddle class, since PowerUp need to check
+ *               whether it hits the paddle, and need to distribute status changes to
+ *               Ball and Paddle when effect is triggered.
  *
  */
 public class PowerUp{
@@ -34,6 +37,7 @@ public class PowerUp{
 
     /**
      * Get the imageview
+     * @return the imageview of this object
      */
     public ImageView imageview(){
         return power;
@@ -41,6 +45,7 @@ public class PowerUp{
 
     /**
      * Check if the powerup is currently dropping
+     * @return a boolean value
      */
     public boolean dropping(){
         return is_dropping;
@@ -48,8 +53,8 @@ public class PowerUp{
 
     /**
      * put the powerup to where it should be
-     * @param x should be valid double
-     * @param y should be valid double
+     * @param x should be the x position of the brick that triggered this particular powerup drop
+     * @param y should be the y position of the brick that triggered this particular powerup drop
      */
     public void drop(double x, double y){
         this.power.setX(x);
@@ -59,9 +64,9 @@ public class PowerUp{
     }
 
     /**
-     * Creates a new list of powerup with size number of new elements in it
-     * @param powerups
-     * @param size
+     * Creates a list of powerup
+     * @param powerups the list being modified to eventually have exactly "size" numbers of powerups
+     * @param size the number of powerups that should be in the list
      */
     public void createList(ArrayList<PowerUp> powerups, int size){
         powerups.removeAll(powerups);
@@ -75,6 +80,11 @@ public class PowerUp{
      * If the powerup is supposed to be dropping, move the powerup image to "drop" it
      * If the powerup touches the Paddle, the powerup is "used" so remove it and activate effect
      * If the powerup reaches the bottom of the screen, it also should effectively disappear
+     * @param elapsedTime
+     * @param SIZE the size of the screen (so that the power up disappears after reaching the bottom)
+     * @param Paddle The paddle who is being checked against the powerups (whether they touch)
+     * @param Ball the bouncer whose status will be changed in give effect
+     * @param powerup the list of powerup that exists in the current game
      */
     public void update(double elapsedTime, int SIZE, Paddle Paddle, Ball Ball, ArrayList<PowerUp> powerup){
         for (Iterator<PowerUp> iterator = powerup.iterator(); iterator.hasNext(); ) {
@@ -96,6 +106,8 @@ public class PowerUp{
      * Type 1 adds 1 life to the ball;
      * Type 2 changes paddle size;
      * Type 3 changes paddle speed
+     * @param Paddle the Paddle whose status is being changed
+     * @param Ball the bouncer whose status is being changed
      */
     private void giveEffect(Paddle Paddle, Ball Ball) {
         switch (type) {

@@ -17,7 +17,7 @@ import java.util.*;
  * Example usage: Brick b = new Brick(3,1,0,0) creates a brick located at the top left corner of the screen
  *                with its image defined by kind3life1.gif
  *
- * Dependencies: Methods within this class use information and calls functions from Ball, Powerup, and Paddle class
+ * Dependencies: Depends on Ball, Paddle, and PowerUp classes
  *
  * Assumptions: Since there are only a few images that has been defined in the resources,
  *              it its expected that the kind status would be between 1 and 4, and life
@@ -49,7 +49,6 @@ public class Brick{
         brick.setY(y + brick.getBoundsInLocal().getHeight());
         xpos = brick.getX();
         ypos = brick.getY();
-
     }
 
     /**
@@ -139,7 +138,8 @@ public class Brick{
      * Activate effect depending on the type of the brick broken
      * Case 2 and 3: directly change the paddle and ball status
      * Case 4: go through the list of powerup, drop the first that isn't dropping
-     * @param ball The bouncer that is being checked
+     * @param ball The bouncer whose status shall be updated
+     * @param paddle The paddle whose status is being updated
      * @param powerup list of powerup for dropping
      *
      */
