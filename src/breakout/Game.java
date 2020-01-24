@@ -25,7 +25,6 @@ public class Game extends Application {
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final Paint BACKGROUND = Color.SNOW;
     public static final String BOUNCER_IMAGE = "ball.gif";
-    public static final String PADDLE_IMAGE = "pad.gif";
     public static final int MAX_LEVEL = 4;
 
     private Group root;
@@ -52,7 +51,7 @@ public class Game extends Application {
     public void start (Stage stage) {
         myStage = stage;
         bouncers.add(new Ball());
-        myPaddle = new Paddle();
+        myPaddle = new Paddle(SIZE);
         setSplashScreen(SIZE, SIZE, BACKGROUND, 0);
     }
 
@@ -83,7 +82,6 @@ public class Game extends Application {
     private void increaseBall(int width, int height, Paint background){
         animation.stop();
         Ball b = new Ball(bouncers.get(0));
-        b.setSpeed(level);
         bouncers.add(b);
         Group temp = new Group();
         (temp).getChildren().addAll(root);
@@ -170,10 +168,12 @@ public class Game extends Application {
     private void step(double elapsedTime) {
 
         for(Ball b:bouncers) {
-            b.update(myPaddle, myBricks, myPowerUp, bouncers, elapsedTime);
+            b.update(myPaddle, elapsedTime);
+            (new Brick()).checkIfHit(myBricks, b, myPaddle, myPowerUp);
         }
-        myPaddle.edgeCheck();
-        (new PowerUp()).update(elapsedTime, myPaddle, bouncers.get(0), myPowerUp);
+        (new Ball()).updateStrength(bouncers);
+        myPaddle.edgeCheck(SIZE);
+        (new PowerUp()).update(elapsedTime, SIZE, myPaddle, bouncers.get(0), myPowerUp);
         myText.updateDuringGame(bouncers, myPaddle);
         myPaddle.move(elapsedTime);
 
@@ -203,7 +203,7 @@ public class Game extends Application {
     private void Level(int level_n, boolean new_level){
 
         is_running = false;
-        myPaddle.resetPos();
+        myPaddle.resetPos(SIZE);
         Ball iball = bouncers.get(0);
         iball.resetPos();
         animation.pause();
@@ -212,10 +212,10 @@ public class Game extends Application {
         }
         bouncers.removeAll(bouncers);
         bouncers.add(iball);
-        myBricks.removeAll(myBricks);
         myText.displayStarter();
         isResetedLevel = true;
         if(new_level) {
+            myBricks.removeAll(myBricks);
             if (level_n <= MAX_LEVEL) {
                 displayActiveGame(level_n);
             } else {
@@ -271,7 +271,8 @@ public class Game extends Application {
                 bouncers.get(0).giveLife();
                 break;
             case A:
-                bouncers.get(0).setStrength(bouncers.get(0).getStrength() + 1, bouncers);
+                bouncers.get(0).setStrength(bouncers.get(0).getStrength() + 1);
+                (new Ball()).updateStrength(bouncers);
                 break;
             case R:
                 Level(level, false);
@@ -333,7 +334,8 @@ public class Game extends Application {
             if(code==KeyCode.S){
                 bouncers = new ArrayList<>();
                 bouncers.add(new Ball());
-                myPaddle = new Paddle();
+                myBricks = new ArrayList<>();
+                myPaddle = new Paddle(SIZE);
                 setSplashScreen(0);
             }
         }

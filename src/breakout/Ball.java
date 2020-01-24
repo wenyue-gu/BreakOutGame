@@ -45,6 +45,8 @@ public class Ball extends Game {
     public Ball(Ball b){
         life = 1;
         strength = b.strength;
+        x_speed = b.x_speed;
+        y_speed = b.y_speed;
         Image image = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(
                 BOUNCER_IMAGE)));
         imageview = new ImageView(image);
@@ -87,14 +89,27 @@ public class Ball extends Game {
     }
 
     /**
-     * Change strength for all balls in the arraylist
-     * triggers when a special brick is cleared
-     * @param balls It should have at least an element
+     * triggers when a special brick is cleared or when cheat key pressed
+     * @param k the strength to be set to
      */
-    public void setStrength(int k, ArrayList<Ball> balls){
+    public void setStrength(int k){
+            if (k < 10) strength = k;
+            else strength = 9;
+        }
+
+    /**
+     * Change strength for all balls in the arraylist to be equal to the max strength of them
+     * @param balls the arraylist of balls to be updated
+     */
+    public void updateStrength(ArrayList<Ball> balls){
+        int s = 0;
+        for(Ball b:balls){
+            if(b.strength>s){
+                s = b.strength;
+            }
+        }
         for(Ball b: balls) {
-            if (k < 10) b.strength = k;
-            else b.strength = 9;
+            b.strength = s;
         }
     }
 
@@ -209,10 +224,9 @@ public class Ball extends Game {
      * Update all necessary information during normal game play
      * (such as checking if ball hit edge of screen, paddle, brick, and other normal movements)
      */
-    public void update(Paddle Paddle, ArrayList<Brick> brick, ArrayList<PowerUp> powerup, ArrayList<Ball> balls, double elapsedTime){
+    public void update(Paddle Paddle, double elapsedTime){
         checkXYDirection();
         checkIfHitPaddle(Paddle);
-        (new Brick()).checkIfHit(brick, this, Paddle, powerup, balls);
         changepos(elapsedTime);
     }
 

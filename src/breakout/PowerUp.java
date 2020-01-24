@@ -17,7 +17,7 @@ import java.util.*;
  *               Methods use information and calls functions from Ball and Paddle class
  *
  */
-public class PowerUp extends Game{
+public class PowerUp{
     private int NUM_POWERUP = 3;
     private int type;
     private ImageView power;
@@ -76,7 +76,7 @@ public class PowerUp extends Game{
      * If the powerup touches the Paddle, the powerup is "used" so remove it and activate effect
      * If the powerup reaches the bottom of the screen, it also should effectively disappear
      */
-    public void update(double elapsedTime, Paddle Paddle, Ball Ball, ArrayList<PowerUp> powerup){
+    public void update(double elapsedTime, int SIZE, Paddle Paddle, Ball Ball, ArrayList<PowerUp> powerup){
         for (Iterator<PowerUp> iterator = powerup.iterator(); iterator.hasNext(); ) {
             PowerUp temp = iterator.next();
             if(temp.dropping())  temp.power.setY(temp.power.getY() + speed * elapsedTime);

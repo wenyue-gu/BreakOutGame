@@ -13,7 +13,8 @@ import java.util.*;
  *
  * Dependencies: It extends the Game class
  */
-public class Paddle extends Game {
+public class Paddle{
+    private String PADDLE_IMAGE = "pad.gif";
 
     private double speed;
     private double size;
@@ -21,7 +22,7 @@ public class Paddle extends Game {
     private int score;
     private int dir;
 
-    public Paddle(){
+    public Paddle(int SIZE){
         score = 0;
         speed = 200;
         size = 1;
@@ -75,15 +76,15 @@ public class Paddle extends Game {
     /**
      * makes the paddle "warps" around when reaching edges
      */
-    public void edgeCheck(){
-        if(imageview.getX()>SIZE*0.9) imageview.setX(-0.1*SIZE);
-        if(imageview.getX()<-0.1*SIZE) imageview.setX(SIZE*0.9);
+    public void edgeCheck(int screenSize){
+        if(imageview.getX()>screenSize*0.9) imageview.setX(-0.1*screenSize);
+        if(imageview.getX()<-0.1*screenSize) imageview.setX(screenSize*0.9);
     }
 
     /**
      * reset back to original size and center of screen
      */
-    public void resetPos(){
+    public void resetPos(int SIZE){
         imageview.setFitWidth(100);
         imageview.setX(SIZE / 2.0 - imageview.getBoundsInLocal().getWidth() / 2);
         imageview.setY(SIZE - imageview.getBoundsInLocal().getHeight()*2);

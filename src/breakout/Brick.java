@@ -54,6 +54,7 @@ public class Brick{
 
     /**
      * Get the life status of the brick
+     * @return the life status of brick
      */
     public int getBricklives() {
         return bricklives;
@@ -61,6 +62,7 @@ public class Brick{
 
     /**
      * Get the imageview of the brick
+     * @return the imageview object associated with this brick
      */
     public ImageView imageview() {
         return brick;
@@ -70,6 +72,7 @@ public class Brick{
      * Create the layout of bricks in each level
      * @param level An integer that indicates the level of the configuration, NEED TO BE between 0 and 4
      * @param Bricks is modified (have elements added into) to represent all bricks on the pane
+     * @return the count of powerups in this level
      */
     public int createPane(ArrayList<Brick> Bricks, int level){
         Scanner scanner = null;
@@ -98,18 +101,19 @@ public class Brick{
      * Checks if the ball touches the brick
      * If the ball touches the brick, brick loses life according to the ball's attack
      * If the brick's life reach 0, the brick is removed, and powerup drop/special effect is triggered
-     * @param bricks should have at least one element
-     * @param powerup should have at least one element
-     * @param balls should have at least one element
+     * @param ball the bouncer being checked
+     * @param paddle the paddle
+     * @param bricks should have at least one element, the remaining bricks on screen
+     * @param powerup should have at least one element, the list of powerup for dropping
      */
-    public void checkIfHit(ArrayList<Brick> bricks, Ball ball, Paddle paddle, ArrayList<PowerUp>powerup, ArrayList<Ball> balls) {
+    public void checkIfHit(ArrayList<Brick> bricks, Ball ball, Paddle paddle, ArrayList<PowerUp>powerup) {
         for (Iterator<Brick> iterator = bricks.iterator(); iterator.hasNext(); ) {
             Brick temp = iterator.next();
             if (ball.imageview().getBoundsInParent().intersects(temp.brick.getBoundsInParent())) {
                 ball.whenHitBrick(temp);
                 temp.updateBrickLife(ball.getStrength(), paddle);
                 if (temp.bricklives <= 0) {
-                    temp.dropPowerUps(ball, paddle, powerup, balls);
+                    temp.dropPowerUps(ball, paddle, powerup);
                     temp.brick.setImage(null);
                     iterator.remove();
                 } else {
@@ -137,14 +141,12 @@ public class Brick{
      * Case 4: go through the list of powerup, drop the first that isn't dropping
      * @param ball The bouncer that is being checked
      * @param powerup list of powerup for dropping
-     * @param balls The arraylist of all balls that exist on screen;
-     *              since strength change in any ball is inherited by all balls this parameter is require
      *
      */
-    private void dropPowerUps(Ball ball, Paddle paddle, ArrayList<PowerUp>powerup, ArrayList<Ball> balls){
+    private void dropPowerUps(Ball ball, Paddle paddle, ArrayList<PowerUp>powerup){
         switch(type) {
             case 2:
-                ball.setStrength(ball.getStrength() + 1, balls);
+                ball.setStrength(ball.getStrength() + 1);
                 break;
             case 3:
                 paddle.addscore(50);
